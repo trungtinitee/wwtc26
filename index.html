@@ -1,0 +1,1831 @@
+<!-- WWTC V4.0 — audited formulas, validation and UI fixes -->
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WWTC v3.0</title>
+<style>
+:root{--bg:#f3f5f7;--panel:#fff;--line:#d8dee5;--ink:#18222d;--muted:#66727e;--blue:#1769aa;--green:#198754;--orange:#b86b00;--red:#b83227}
+*{box-sizing:border-box}body{margin:0;font:14px "Segoe UI",Arial;background:var(--bg);color:var(--ink)}
+header{height:58px;background:#132536;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+header b{font-size:19px}header span{font-size:12px;color:#cbd5df}
+.layout{display:grid;grid-template-columns:245px 1fr;min-height:calc(100vh - 58px)}
+aside{background:white;border-right:1px solid var(--line);padding:12px;position:sticky;top:0;height:calc(100vh - 58px);overflow:auto}
+nav button{width:100%;border:0;background:transparent;text-align:left;padding:10px;border-radius:7px;margin:2px 0;cursor:pointer}
+nav button:hover,nav button.active{background:#eaf3fb;color:var(--blue);font-weight:600}
+.group{font-size:11px;color:#7a8793;margin:14px 8px 5px;text-transform:uppercase;font-weight:700}
+main{max-width:1500px;width:100%;margin:auto;padding:20px}.page{display:none}.page.active{display:block}
+.panel{background:white;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.form{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}
+.field input,.field select{width:100%;padding:9px;border:1px solid #cbd3da;border-radius:6px;background:white}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn{padding:9px 14px;border-radius:6px;border:1px solid var(--line);cursor:pointer;background:#eef2f5}
+.primary{background:var(--blue);color:white;border-color:var(--blue)}.card{background:white;border:1px solid var(--line);border-radius:10px;padding:14px}
+.big{font-size:24px;font-weight:700}.muted{font-size:12px;color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{background:#f6f8fa}
+.ok,.warn,.bad{padding:9px;border-radius:7px;margin:7px 0}.ok{background:#eaf7ef;color:var(--green)}.warn{background:#fff5df;color:var(--orange)}.bad{background:#fdecea;color:var(--red)}
+.formula{background:#f6f8fa;border-left:3px solid var(--blue);padding:10px;margin-top:10px;font:12px Consolas,monospace}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#f5f7f9;padding:8px 12px;border-radius:6px;cursor:pointer}
+.tabs button.active{background:#eaf3fb;color:var(--blue)}.hidden{display:none}.note{font-size:12px;color:var(--muted)}
+.stdtag{display:inline-block;padding:3px 7px;border-radius:10px;background:#edf3f8;color:#315b78;font-size:11px;margin-right:4px}
+.small{font-size:12px}.sectionTitle{margin:4px 0 10px}.stickyNote{position:sticky;bottom:8px}
+@media(max-width:1000px){.grid,.form{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:190px 1fr}}
+@media(max-width:650px){.layout{display:block}aside{position:static;height:auto}.grid,.form{grid-template-columns:1fr}main{padding:10px}}
+
+/* WWTC mobile + report */
+.mobileBar{display:none}
+.reportToolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.reportToolbar h2{margin:0 0 3px}.reportSub{font-size:12px;color:var(--muted)}
+.reportActions{display:flex;gap:7px;flex-wrap:wrap}
+.reportPaper{background:#fff;border:1px solid var(--line);border-radius:10px;padding:24px}
+.reportEmpty{text-align:center;padding:50px 15px;color:var(--muted)}
+.reportEmpty h3{color:var(--text);margin-bottom:5px}
+.reportDocHead{border-bottom:2px solid #1d5f8f;padding-bottom:13px;margin-bottom:18px}
+.reportCompany{font-size:11px;letter-spacing:.6px;color:#607080;font-weight:700}
+.reportDocTitle{font-size:23px;font-weight:800;margin:5px 0;line-height:1.25}
+.reportDocMeta{font-size:11px;color:#647382}
+.reportBlock{margin:18px 0}
+.reportBlockTitle{font-size:15px;font-weight:800;padding:8px 10px;background:#f2f5f7;border-left:4px solid #1d5f8f;margin-bottom:0}
+.reportTableWrap{overflow-x:auto;border:1px solid #dfe5ea;border-top:0}
+.reportTable{width:100%;border-collapse:collapse;font-size:12px}
+.reportTable th,.reportTable td{border-bottom:1px solid #e5eaee;padding:8px 10px;text-align:left;vertical-align:top;line-height:1.45}
+.reportTable thead th{background:#f8fafb;color:#5b6975;font-size:10px;text-transform:uppercase}
+.reportTable tbody th{width:38%;background:#fcfcfd;font-weight:700;color:#34424e}
+.reportTable tr:last-child th,.reportTable tr:last-child td{border-bottom:0}
+.reportTable td{white-space:normal;word-break:normal}
+.reportNotes{font-size:11px;line-height:1.5;color:#687783;padding:8px 10px;background:#fbfcfd;border:1px solid #e2e7eb;border-top:0}
+.reportFoot{font-size:10.5px;line-height:1.5;color:#687783;border-top:1px solid #dfe5ea;padding-top:10px;margin-top:22px}
+
+.syncNote{margin-top:8px;padding:7px 9px;border:1px solid #cfe5d7;background:#f3faf5;border-radius:7px;color:#287044;font-size:11px}
+@media(max-width:650px){
+  body{font-size:14px;padding-bottom:64px}
+  header{height:52px;padding:0 12px;position:sticky;top:0;z-index:30}
+  header b{font-size:16px} header span{font-size:10px}
+  .layout{display:block;min-height:0} aside{display:none}
+  main{padding:10px 10px 20px;max-width:none}
+  h2{font-size:21px;margin:8px 0 12px}
+  .panel{padding:12px;border-radius:9px;margin-bottom:10px}
+  .form,.grid{grid-template-columns:1fr}
+  .field input,.field select{min-height:42px;font-size:16px}
+  .btn{min-height:42px;padding:9px 11px;font-size:13px}
+  table{font-size:12px;display:block;overflow-x:auto}
+  th,td{padding:7px;min-width:105px}
+  .mobileBar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:100;background:#fff;border-top:1px solid var(--line);padding:8px;gap:7px;box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+  .mobileBar select{flex:1;min-width:0;height:44px;border:1px solid #cbd3da;border-radius:8px;background:#fff;padding:0 8px;font-size:14px}
+  .mobileReport{height:44px;border:1px solid var(--blue);background:var(--blue);color:#fff;border-radius:8px;padding:0 11px;white-space:nowrap}
+  .reportToolbar{display:block}.reportActions{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:8px}
+  .reportActions .btn{font-size:11px;padding:7px 4px}
+  .reportPaper{padding:11px;border-radius:9px}
+  .reportDocTitle{font-size:18px}
+  .reportTable{font-size:11.5px}
+  .reportTable th,.reportTable td{padding:7px 8px}
+  .reportTable tbody th{width:42%;min-width:125px}
+}
+@media print{
+  header,aside,.mobileBar,.reportToolbar{display:none!important}
+  body{background:#fff}.layout{display:block}main{max-width:none;padding:0}
+  #report{display:block!important}.page:not(#report){display:none!important}
+  .reportPaper{border:0;box-shadow:none;padding:0}
+}
+
+.techPanel{margin-bottom:12px}
+.techTitle{font-size:18px;font-weight:800;margin-bottom:3px}
+.techSub{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:11px}
+.techRow{display:flex;gap:8px}
+.techSelect{width:100%;min-height:42px;border:1px solid #ccd5dc;border-radius:8px;background:#fff;padding:8px 10px;font-size:14px}
+.unitChecklist{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}
+.unitCheck{display:flex;align-items:center;gap:7px;border:1px solid #dfe5ea;border-radius:8px;padding:8px;background:#fbfcfd;font-size:12px}
+.unitCheck input{accent-color:#1d6fa5}
+.hiddenUnitNav{display:none!important}
+@media(max-width:650px){
+  .unitChecklist{grid-template-columns:1fr 1fr}
+  .unitCheck{font-size:11.5px;padding:8px 7px}
+}
+
+.projectTech{margin-top:12px}
+.projectTableWrap{overflow-x:auto}.projectActions{white-space:nowrap}.innerTabs{margin-bottom:10px}.innerTabs button{border:1px solid #d6dee5;background:#f5f7f9;border-radius:7px;padding:7px 10px;margin-right:5px}.innerTabs button.active{background:#1d6fa5;color:#fff;border-color:#1d6fa5}
+/* =========================
+   WWTC V3.0 - Green Environment Theme
+   ========================= */
+:root{
+  --blue:#2e7d32 !important;
+  --primary:#2e7d32 !important;
+  --accent:#43a047 !important;
+  --line:#dce8df !important;
+  --muted:#65756a !important;
+  --text:#1f2c24 !important;
+  --bg:#f4f8f5 !important;
+}
+body{background:#f4f8f5;color:#1f2c24}
+header{background:#1b5e20 !important}
+header b{color:#fff}
+header span{color:#d7eadb}
+aside{background:#fbfdfb;border-right:1px solid #dce8df}
+nav button.active{background:#e8f5e9 !important;color:#1b5e20 !important;border-left-color:#2e7d32 !important}
+nav button:hover{background:#f0f7f1}
+.btn.primary{background:#2e7d32 !important;border-color:#2e7d32 !important}
+.btn.primary:hover{background:#256628 !important}
+.btn{border-color:#d0ded4}
+.panel{border-color:#dce8df}
+h2{color:#245c2a}
+.field input:focus,.field select:focus,.techSelect:focus{border-color:#43a047;box-shadow:0 0 0 2px rgba(67,160,71,.12)}
+.syncNote{border-color:#cce8d0;background:#f1faf2;color:#27652c}
+.reportDocHead{border-bottom-color:#2e7d32}
+.reportBlockTitle{border-left-color:#2e7d32}
+.reportTable thead th{color:#4d6b54}
+.mobileBar{border-top-color:#dce8df}
+.mobileReport{background:#2e7d32 !important;border-color:#2e7d32 !important}
+.techSelect{border-color:#cddbd1}
+.innerTabs button.active{background:#2e7d32 !important;border-color:#2e7d32 !important}
+.unitCheck input{accent-color:#2e7d32}
+.warn{border-left-color:#f9a825}
+.ok{border-left-color:#43a047}
+
+@media print{
+  header{display:none!important}
+}
+
+/* WWTC V3.0 — technology visibility */
+.techHidden{display:none!important}
+.hiddenUnitNav{display:none!important}
+</style>
+
+<style id="wwtc-modern-ui">
+/* ===== WWTC Modern UI Layer — presentation only, no calculation logic changed ===== */
+:root{
+  --wwtc-bg:#f5f7f8;
+  --wwtc-surface:#ffffff;
+  --wwtc-surface-2:#f8faf9;
+  --wwtc-border:#e2e8e4;
+  --wwtc-text:#16241d;
+  --wwtc-muted:#718078;
+  --wwtc-green:#188a57;
+  --wwtc-green-2:#116b43;
+  --wwtc-green-soft:#e8f6ef;
+  --wwtc-shadow:0 10px 30px rgba(19,55,39,.07);
+  --wwtc-shadow-sm:0 3px 12px rgba(19,55,39,.06);
+  --wwtc-radius:14px;
+}
+html,body{background:var(--wwtc-bg)!important;color:var(--wwtc-text)!important}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;letter-spacing:.01em}
+
+/* Header */
+header{
+  height:64px!important;
+  padding:0 22px!important;
+  background:linear-gradient(135deg,#0f5e3d 0%,#1a8f5a 65%,#25aa6b 100%)!important;
+  box-shadow:0 5px 18px rgba(15,94,61,.16);
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+header b{font-size:22px!important;font-weight:800!important;letter-spacing:.04em}
+header span{color:rgba(255,255,255,.86)!important}
+
+
+/* Layout */
+.layout{
+  grid-template-columns:260px 1fr!important;
+  min-height:calc(100vh - 64px)!important;
+}
+aside{
+  background:rgba(255,255,255,.92)!important;
+  border-right:1px solid var(--wwtc-border)!important;
+  box-shadow:4px 0 20px rgba(27,60,45,.035);
+  padding:14px!important;
+  top:64px!important;
+  height:calc(100vh - 64px)!important;
+  backdrop-filter:blur(10px);
+}
+
+/* Navigation */
+.group{
+  color:#8a978f!important;
+  font-size:10px!important;
+  letter-spacing:.08em!important;
+  margin:18px 8px 7px!important;
+}
+nav button{
+  color:#506059!important;
+  border-radius:10px!important;
+  padding:11px 12px!important;
+  margin:3px 0!important;
+  transition:all .18s ease!important;
+  font-weight:500;
+}
+nav button:hover{
+  background:#f0f7f3!important;
+  color:var(--wwtc-green-2)!important;
+  transform:translateX(2px);
+}
+nav button.active{
+  background:linear-gradient(90deg,#e7f6ef,#f2faf6)!important;
+  color:var(--wwtc-green-2)!important;
+  font-weight:700!important;
+  box-shadow:inset 3px 0 0 var(--wwtc-green);
+}
+
+/* Main content */
+main{
+  max-width:1600px!important;
+  padding:24px!important;
+}
+h2{
+  font-size:25px!important;
+  font-weight:800!important;
+  letter-spacing:-.02em;
+  margin:3px 0 16px!important;
+  color:#1b3528!important;
+}
+h3{color:#274f3c!important}
+
+/* Panels/cards */
+.panel,.card{
+  background:var(--wwtc-surface)!important;
+  border:1px solid var(--wwtc-border)!important;
+  border-radius:var(--wwtc-radius)!important;
+  box-shadow:var(--wwtc-shadow-sm)!important;
+}
+.panel{
+  padding:18px!important;
+  margin-bottom:16px!important;
+}
+.card{
+  padding:16px!important;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.card:hover{
+  transform:translateY(-1px);
+  box-shadow:var(--wwtc-shadow)!important;
+  border-color:#d5e5dc!important;
+}
+.grid{gap:14px!important}
+.form{gap:13px!important}
+
+/* Dashboard metric cards */
+.big{
+  font-size:28px!important;
+  font-weight:800!important;
+  color:#173f2b;
+}
+.muted{color:var(--wwtc-muted)!important}
+
+/* Inputs */
+.field label{
+  color:#65736b!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  letter-spacing:.02em;
+}
+.field input,.field select,.techSelect{
+  border:1px solid #d5dfd9!important;
+  border-radius:10px!important;
+  min-height:42px;
+  background:#fff!important;
+  transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.field input:hover,.field select:hover,.techSelect:hover{
+  border-color:#b9cec1!important;
+}
+.field input:focus,.field select:focus,.techSelect:focus{
+  outline:none!important;
+  border-color:#37a56e!important;
+  box-shadow:0 0 0 3px rgba(55,165,110,.12)!important;
+}
+
+/* Buttons */
+.btn{
+  border:1px solid #dbe5df!important;
+  border-radius:10px!important;
+  background:#f6f8f7!important;
+  color:#3f5148!important;
+  font-weight:600!important;
+  transition:all .16s ease!important;
+  box-shadow:none!important;
+}
+.btn:hover{
+  transform:translateY(-1px);
+  background:#eef5f1!important;
+}
+.btn.primary,.mobileReport{
+  background:linear-gradient(135deg,#178657,#1da86b)!important;
+  border-color:#178657!important;
+  color:#fff!important;
+  box-shadow:0 5px 14px rgba(24,134,87,.16)!important;
+}
+.btn.primary:hover,.mobileReport:hover{
+  background:linear-gradient(135deg,#126e46,#178f5a)!important;
+}
+
+/* Tables */
+table{
+  border:1px solid var(--wwtc-border);
+  border-radius:12px;
+  overflow:hidden;
+}
+th{
+  background:#f6f9f7!important;
+  color:#5a6b62!important;
+  font-weight:700;
+}
+th,td{border-bottom:1px solid #e8eee9!important}
+
+/* Status boxes */
+.ok,.warn,.bad{
+  border-radius:10px!important;
+  padding:11px!important;
+}
+.ok{background:#edf8f1!important;color:#246942!important}
+.warn{background:#fff7e8!important;color:#8b6315!important}
+.bad{background:#fdeeed!important;color:#a4372e!important}
+
+/* Tags */
+.stdtag{
+  background:#eaf6ef!important;
+  color:#2a7450!important;
+  padding:4px 8px!important;
+  border-radius:999px!important;
+  font-weight:700;
+}
+
+/* Technology panel */
+.techPanel{
+  background:linear-gradient(145deg,#fbfdfc,#f5faf7)!important;
+  border:1px solid #dce9e1!important;
+  border-radius:16px!important;
+  padding:15px!important;
+  box-shadow:var(--wwtc-shadow-sm);
+}
+.techTitle{font-size:19px!important;color:#1f5137}
+.unitCheck{
+  border:1px solid #dbe6df!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  transition:.15s;
+}
+.unitCheck:hover{
+  border-color:#bdd8c8!important;
+  background:#f6fbf8!important;
+}
+
+/* Tabs */
+.tabs button,.innerTabs button{
+  border:1px solid #dbe4df!important;
+  background:#f7f9f8!important;
+  border-radius:9px!important;
+  font-weight:600;
+}
+.tabs button.active,.innerTabs button.active{
+  background:#e7f6ef!important;
+  color:#146a45!important;
+  border-color:#bfe1ce!important;
+}
+
+/* Formula */
+.formula{
+  background:#f7faf8!important;
+  border-left:4px solid #2b9b67!important;
+  border-radius:0 10px 10px 0;
+}
+
+/* Report */
+.reportPaper{
+  box-shadow:var(--wwtc-shadow)!important;
+  border-radius:16px!important;
+}
+.reportBlockTitle{
+  background:#f4f8f5!important;
+  color:#264d39!important;
+}
+
+/* Mobile bottom navigation */
+@media(max-width:650px){
+  header{height:56px!important;padding:0 12px!important}
+  header b{font-size:18px!important}
+  .layout{min-height:0!important}
+  main{padding:12px 10px 78px!important}
+  .panel,.card{border-radius:12px!important}
+  .mobileBar{
+    background:rgba(255,255,255,.96)!important;
+    backdrop-filter:blur(12px);
+    box-shadow:0 -8px 25px rgba(22,50,38,.10)!important;
+    border-top:1px solid #dfe8e3!important;
+    padding:8px!important;
+  }
+  .mobileBar select,.mobileReport{
+    min-height:46px!important;
+    height:46px!important;
+    border-radius:11px!important;
+  }
+  .mobileReport{font-weight:700!important}
+}
+
+/* Small visual hierarchy helpers */
+.sectionTitle{color:#28553e!important;font-weight:800!important}
+.syncNote{border-radius:10px!important}
+.projectTableWrap{border-radius:10px}
+</style>
+
+
+<style id="wwtc-ultra-modern">
+/* =========================================================
+   WWTC V3.2 — Ultra Modern UI
+   Visual layer only. Existing IDs / calculation functions preserved.
+   ========================================================= */
+:root{
+  --u-bg:#f3f7f5;
+  --u-surface:rgba(255,255,255,.88);
+  --u-surface-solid:#fff;
+  --u-border:#e0e9e4;
+  --u-text:#13251b;
+  --u-muted:#73817a;
+  --u-green:#168a58;
+  --u-green-dark:#0d6742;
+  --u-green-bright:#29b978;
+  --u-soft:#e6f6ee;
+  --u-soft-2:#f3faf6;
+  --u-shadow:0 16px 42px rgba(20,55,39,.08);
+  --u-shadow-sm:0 6px 20px rgba(20,55,39,.055);
+  --u-radius:16px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 15% -10%,rgba(41,185,120,.10),transparent 28%),
+    radial-gradient(circle at 90% 8%,rgba(22,138,88,.07),transparent 24%),
+    var(--u-bg)!important;
+  color:var(--u-text)!important;
+}
+header{
+  height:68px!important;
+  padding:0 24px!important;
+  position:sticky!important;
+  top:0!important;
+  z-index:100!important;
+  background:rgba(10,72,46,.88)!important;
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:0 10px 28px rgba(8,66,42,.18);
+}
+header b{
+  font-size:23px!important;
+  letter-spacing:.06em!important;
+  font-weight:900!important;
+}
+header span{font-size:11px!important;color:rgba(255,255,255,.82)!important}
+
+
+/* Sidebar becomes app navigation */
+.layout{
+  grid-template-columns:268px 1fr!important;
+  min-height:calc(100vh - 68px)!important;
+}
+aside{
+  top:68px!important;
+  height:calc(100vh - 68px)!important;
+  padding:16px 12px!important;
+  background:rgba(255,255,255,.80)!important;
+  backdrop-filter:blur(18px);
+  border-right:1px solid var(--u-border)!important;
+}
+aside nav{
+  padding:2px 2px 18px;
+}
+.group{
+  margin:18px 8px 7px!important;
+  color:#91a098!important;
+  letter-spacing:.12em!important;
+}
+nav button{
+  position:relative;
+  padding:11px 13px!important;
+  margin:3px 0!important;
+  border-radius:11px!important;
+  color:#53625a!important;
+  font-weight:550!important;
+}
+nav button.active{
+  color:var(--u-green-dark)!important;
+  background:linear-gradient(90deg,rgba(23,138,88,.12),rgba(23,138,88,.035))!important;
+  box-shadow:inset 3px 0 0 var(--u-green), 0 2px 8px rgba(23,138,88,.05);
+}
+nav button.active::after{
+  content:"";
+  position:absolute;
+  right:10px;top:50%;width:5px;height:5px;
+  border-radius:50%;
+  transform:translateY(-50%);
+  background:var(--u-green-bright);
+}
+
+/* Main content */
+main{
+  max-width:1680px!important;
+  padding:28px!important;
+}
+h2{
+  font-size:28px!important;
+  line-height:1.15!important;
+  letter-spacing:-.03em!important;
+  margin:2px 0 18px!important;
+  color:#18382a!important;
+}
+h3{letter-spacing:-.015em!important}
+.page>h2::after{
+  content:"";
+  display:block;
+  width:42px;height:4px;margin-top:10px;
+  border-radius:10px;
+  background:linear-gradient(90deg,var(--u-green),var(--u-green-bright));
+}
+
+/* Modern glass cards */
+.panel,.card{
+  background:var(--u-surface)!important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(218,230,224,.9)!important;
+  border-radius:var(--u-radius)!important;
+  box-shadow:var(--u-shadow-sm)!important;
+}
+.panel{
+  padding:19px!important;
+  margin-bottom:16px!important;
+}
+.card{
+  padding:17px!important;
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--u-shadow)!important;
+  border-color:#cfe0d6!important;
+}
+.grid{gap:15px!important}
+.form{gap:13px!important}
+
+/* Dashboard */
+#home .card{
+  position:relative;
+  overflow:hidden;
+  min-height:110px;
+}
+#home .card::before{
+  content:"";
+  position:absolute;
+  width:100px;height:100px;
+  right:-35px;top:-38px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(41,185,120,.15),transparent 68%);
+}
+#home .big{
+  font-size:30px!important;
+  letter-spacing:-.03em;
+}
+
+/* Inputs */
+.field label{
+  color:#66766d!important;
+  font-size:11px!important;
+  font-weight:750!important;
+  margin-bottom:6px!important;
+}
+.field input,.field select,.techSelect{
+  min-height:44px!important;
+  border-radius:11px!important;
+  border:1px solid #d4e0da!important;
+  background:#fff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.field input:focus,.field select:focus,.techSelect:focus{
+  border-color:#38aa73!important;
+  box-shadow:0 0 0 4px rgba(56,170,115,.11)!important;
+}
+.field input[type="number"]{
+  font-variant-numeric:tabular-nums;
+}
+
+/* Buttons */
+.actions{gap:8px!important}
+.btn{
+  min-height:42px;
+  padding:9px 14px!important;
+  border-radius:11px!important;
+  font-weight:700!important;
+  letter-spacing:.005em;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 7px 17px rgba(22,68,48,.08);
+}
+.btn.primary,.mobileReport{
+  background:linear-gradient(135deg,#168a58,#26b476)!important;
+  border-color:#168a58!important;
+  box-shadow:0 7px 18px rgba(22,138,88,.18)!important;
+}
+.btn.primary:hover,.mobileReport:hover{
+  background:linear-gradient(135deg,#106c45,#1c9e65)!important;
+}
+
+/* Tables */
+table{
+  border:1px solid var(--u-border);
+  border-radius:13px;
+  overflow:hidden;
+  background:#fff;
+}
+th{
+  background:linear-gradient(180deg,#f8fbf9,#f2f7f4)!important;
+  color:#5a6e63!important;
+  font-size:11px!important;
+  letter-spacing:.03em!important;
+  text-transform:uppercase;
+}
+td,th{border-bottom:1px solid #e9efeb!important}
+
+/* Status */
+.ok,.warn,.bad{
+  border-radius:11px!important;
+  border:1px solid transparent;
+  box-shadow:none!important;
+}
+.ok{border-color:#cde8d8!important;background:#effaf3!important;color:#256b47!important}
+.warn{border-color:#f4dfaf!important;background:#fff8e9!important;color:#8b6718!important}
+.bad{border-color:#efc7c3!important;background:#fff1ef!important;color:#a44037!important}
+
+/* Tech / project blocks */
+.techPanel{
+  padding:17px!important;
+  border-radius:17px!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(41,185,120,.10),transparent 25%),
+    linear-gradient(145deg,#fbfefc,#f3faf6)!important;
+}
+.techTitle{font-size:20px!important;font-weight:850!important;color:#1f5038}
+.unitCheck{
+  border-radius:11px!important;
+  padding:9px!important;
+  background:rgba(255,255,255,.82)!important;
+}
+.unitCheck:hover{
+  box-shadow:0 6px 16px rgba(25,75,51,.06);
+  transform:translateY(-1px);
+}
+
+/* Tabs */
+.tabs{gap:7px!important}
+.tabs button,.innerTabs button{
+  border:1px solid #dbe6df!important;
+  background:#f8faf9!important;
+  border-radius:10px!important;
+  min-height:38px;
+  padding:7px 12px!important;
+  font-weight:700!important;
+}
+.tabs button.active,.innerTabs button.active{
+  background:linear-gradient(135deg,#e5f7ec,#effaf4)!important;
+  color:#116943!important;
+  border-color:#bfe1cf!important;
+  box-shadow:0 4px 10px rgba(22,138,88,.07);
+}
+
+/* Formula */
+.formula{
+  border:1px solid #dfe9e4;
+  border-left:4px solid var(--u-green)!important;
+  border-radius:0 11px 11px 0!important;
+  background:#f8fbf9!important;
+}
+
+/* Report toolbar */
+.reportToolbar{
+  padding:14px 16px;
+  border-radius:15px;
+  background:rgba(255,255,255,.75);
+  border:1px solid var(--u-border);
+}
+.reportPaper{border-radius:17px!important;box-shadow:var(--u-shadow)!important}
+.reportBlockTitle{border-radius:8px 8px 0 0!important}
+
+/* Mobile */
+@media(max-width:650px){
+  body{padding-bottom:72px!important}
+  header{
+    height:58px!important;
+    padding:0 12px!important;
+  }
+  header b{font-size:18px!important}
+  header span{font-size:9px!important}
+  main{padding:12px 10px 84px!important}
+  h2{font-size:23px!important}
+  .panel,.card{border-radius:13px!important;padding:13px!important}
+  .mobileBar{
+    bottom:0;
+    padding:8px!important;
+    gap:7px!important;
+    border-top:1px solid rgba(214,227,219,.95)!important;
+    background:rgba(255,255,255,.94)!important;
+    backdrop-filter:blur(18px)!important;
+    -webkit-backdrop-filter:blur(18px)!important;
+    box-shadow:0 -10px 28px rgba(18,58,40,.10)!important;
+  }
+  .mobileBar select,.mobileReport{
+    height:48px!important;
+    min-height:48px!important;
+    border-radius:12px!important;
+  }
+  .field input,.field select,.techSelect{
+    min-height:46px!important;
+    font-size:16px!important;
+  }
+  .btn{
+    min-height:44px!important;
+    padding:9px 12px!important;
+  }
+  .reportActions{
+    grid-template-columns:1fr 1fr 1fr!important;
+  }
+}
+</style>
+
+
+<style id="wwtc-compliance-geometry-css">
+.complianceHero{
+  display:grid;
+  grid-template-columns:1.6fr .9fr;
+  gap:14px;
+  align-items:stretch;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(41,185,120,.12),transparent 26%),
+    linear-gradient(145deg,#fbfefc,#f2faf6)!important;
+}
+.complianceSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.complianceKpi{
+  border:1px solid #dce8e1;border-radius:12px;padding:12px;
+  background:rgba(255,255,255,.75);display:flex;flex-direction:column;justify-content:center
+}
+.complianceKpi span{font-size:11px;color:#6c7c73}.complianceKpi strong{font-size:25px;margin-top:3px}
+.okKpi strong{color:#21824f}.warnKpi strong{color:#ad7a17}.badKpi strong{color:#b23931}
+.cmpBadge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800}
+.cmpOk{background:#e8f6ee;color:#267449}.cmpWarn{background:#fff5df;color:#9a6b18}.cmpBad{background:#fde9e7;color:#a03b34}
+.cmpRowOk{background:#f5fcf7}.cmpRowWarn{background:#fffaf0}.cmpRowBad{background:#fff5f3}
+.cmpSource{font-size:11px;color:#6c7d73}.cmpReason{font-size:12px;line-height:1.45}
+.geoResultGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.geoKpi{border:1px solid #dce8e1;border-radius:12px;padding:11px;background:#fbfdfc}
+.geoKpi small{display:block;color:#6c7c73}.geoKpi strong{display:block;font-size:21px;color:#1e573a;margin-top:2px}
+@media(max-width:850px){.complianceHero{grid-template-columns:1fr}.geoResultGrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.complianceSummary{grid-template-columns:1fr 1fr 1fr}.complianceKpi{padding:9px}.complianceKpi strong{font-size:21px}.geoResultGrid{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.complianceSummary{grid-template-columns:1fr}.geoResultGrid{grid-template-columns:1fr}}
+</style>
+
+
+
+
+
+
+
+
+<style id="wwtc-v38-header">
+.wwtc-brand{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  min-height:82px;
+  padding:10px 18px 12px;
+  box-sizing:border-box;
+}
+.wwtc-brand-left{
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:.08em;
+  line-height:1;
+}
+.wwtc-brand-right{
+  margin-left:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  justify-content:center;
+  gap:3px;
+  text-align:right;
+}
+.wwtc-topline{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+.wwtc-combined-icon{
+  width:48px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.wwtc-combined-icon svg{
+  display:block;
+  width:48px;
+  height:42px;
+}
+.wwtc-version{
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.05em;
+  white-space:nowrap;
+}
+.wwtc-author{
+  position:static;
+  margin:0;
+  font-size:11px;
+  font-weight:600;
+  opacity:.72;
+  white-space:nowrap;
+}
+@media(max-width:700px){
+  .wwtc-brand{min-height:74px;padding:8px 14px 10px}
+  .wwtc-brand-left{font-size:26px}
+  .wwtc-topline{gap:8px}
+  .wwtc-combined-icon{width:42px;height:37px}
+  .wwtc-combined-icon svg{width:42px;height:37px}
+  .wwtc-version{font-size:12px}
+  .wwtc-author{font-size:10px}
+}
+</style>
+
+</head>
+<body>
+
+<div class="mobileBar">
+  <select id="mobileNav" aria-label="Chọn module">
+    <option value="home">⌂  Tổng quan</option>
+    <option value="project">▰  Dự án</option>
+    <option value="standards">▤  Quy phạm</option><option value="compliance">✓  Kiểm tra quy phạm</option><option value="geometry">▦  Hình học bể</option>
+    <option value="report">▤  Báo cáo</option>
+    <option value="load">▥  Tải lượng</option>
+    <option value="equal">◉  Điều hòa</option>
+    <option value="coag">⚗  Keo tụ – tạo bông</option>
+    <option value="settle">▽  Lắng</option>
+    <option value="float">◎  Tuyển nổi</option>
+    <option value="uasb">◈  UASB</option>
+    <option value="bio">◉  Anoxic / Aerotank</option>
+    <option value="sbr">◈  SBR</option>
+    <option value="filter">◇  Lọc áp lực</option>
+    <option value="disinfect">✦  Khử trùng</option>
+    <option value="sludge">♻  Bùn</option>
+    <option value="pump">↗  Bơm</option>
+    <option value="air">≈  Oxy / Blower</option>
+    <option value="chemical">⚗  Hóa chất</option>
+    <option value="hydraulic">≋  Thủy lực</option>
+    <option value="electric">⚡  Điện</option>
+    <option value="units">⇄  Đổi đơn vị</option>
+  </select>
+  <button class="mobileReport" onclick="showReport()">▤  Báo cáo</button>
+</div>
+
+<header>
+<div class="wwtc-brand">
+  <div class="wwtc-brand-left">WWTC</div>
+  <div class="wwtc-brand-right">
+    <div class="wwtc-topline">
+      <div class="wwtc-combined-icon" aria-label="Biểu tượng máy tính và giọt nước">
+        <svg viewBox="0 0 52 44" role="img" aria-hidden="true">
+          <rect x="2" y="2" width="32" height="23" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M10 31h16M15 25v6M21 25v6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M39 13c0 0-8 9-8 16a8 8 0 0 0 16 0c0-7-8-16-8-16Z" fill="currentColor" opacity=".9"/>
+        </svg>
+      </div>
+      <div class="wwtc-version">v3.0</div>
+    </div>
+    <div class="wwtc-author">Author: Trung Tín</div>
+  </div>
+</header>
+<div class="layout"><aside><nav>
+<div class="group">Tổng quan</div>
+<button class="active" data-p="home">⌂ Dashboard</button><button data-p="report">▤ Báo cáo</button><button data-p="project">▣ Dự án</button><button data-p="standards">▤ Quy phạm & thông số</button><button data-p="compliance">✓ Kiểm tra quy phạm</button><button data-p="geometry">▦ Hình học bể</button>
+<div class="group">Nước thải</div>
+<button data-p="load">▣ Tải lượng</button><button data-p="equal">◉ Bể điều hòa</button><button data-p="coag">⚗ Keo tụ – tạo bông</button><button data-p="settle">▽ Lắng</button><button data-p="float">◎ Tuyển nổi</button><button data-p="uasb">◈ UASB</button><button data-p="bio">◉ Anoxic / Aerotank</button><button data-p="sbr">◈ SBR</button><button data-p="filter">◇ Lọc áp lực</button><button data-p="disinfect">✦ Khử trùng</button><button data-p="sludge">♻ Bùn</button>
+<div class="group">Thiết bị</div><button data-p="pump">↗ Bơm</button><button data-p="air">≈ Oxy / Blower</button><button data-p="chemical">⚗ Hóa chất</button>
+<div class="group">Tiện ích</div><button data-p="hydraulic">≋ Thủy lực</button><button data-p="electric">⚡ Điện</button><button data-p="units">⇄ Đổi đơn vị</button>
+</nav></aside><main>
+
+
+<section id="report" class="page">
+  <div class="reportToolbar">
+    <div><h2>Báo cáo thiết kế</h2><div class="reportSub">Tổng hợp kết quả tính toán từ các công trình đơn vị</div></div>
+    <div class="reportActions">
+      <button class="btn primary" onclick="generateReport()">↻ Cập nhật</button>
+      <button class="btn" onclick="exportReportHTML()">⇩ Xuất HTML</button>
+      <button class="btn" onclick="printReport()">🖨 In / PDF</button>
+    </div>
+  </div>
+  <div id="reportOut" class="reportPaper">
+    <div class="reportEmpty"><h3>Chưa có báo cáo</h3><p>Nhấn “Cập nhật” để tổng hợp dữ liệu.</p></div>
+  </div>
+</section>
+
+
+<section id="home" class="page active"><h2>Dashboard</h2>
+<div class="grid"><div class="card"><div class="muted">Module</div><div class="big">20+</div></div><div class="card"><div class="muted">Thiết kế</div><div class="big">WWTC</div></div><div class="card"><div class="muted">Chạy</div><div class="big">Offline</div></div><div class="card"><div class="muted">Version</div><div class="big">V3.0</div></div></div>
+<div class="panel"><h3>Quy trình thiết kế</h3><p>Nhập Q và chất lượng đầu vào → tính tải lượng → chọn công nghệ → tính từng công trình → kiểm tra thông số → đối chiếu cơ sở thiết kế → lưu dự án.</p>
+<div class="warn"><b>Lưu ý quan trọng:</b> bảng “Quy phạm & thông số” phân biệt <b>yêu cầu/tiêu chuẩn</b> với <b>khoảng tham khảo thiết kế</b>. Không coi mọi khoảng giá trị là giá trị bắt buộc của TCVN/QCVN.</div></div>
+<div class="panel"><h3>Cơ sở tiêu chuẩn chính</h3>
+<p><span class="stdtag">TCVN 7957:2023</span> Thoát nước – Mạng lưới và công trình bên ngoài – Yêu cầu thiết kế. Tiêu chuẩn này còn hiệu lực và đã thay TCVN 7957:2008.</p>
+<p><span class="stdtag">TCVN 7222:2022</span> Yêu cầu chung về môi trường đối với trạm xử lý nước thải sinh hoạt tập trung.</p>
+<p class="note">Các thông số công nghệ cụ thể như OLR UASB, SVI, F/M, HRT SBR, tải trọng DAF… phải được chọn theo loại nước thải, mục tiêu xử lý, thí nghiệm/pilot, tải trọng thực tế và catalogue thiết bị; không được gán cứng là “quy phạm” nếu tiêu chuẩn không quy định trực tiếp.</p>
+</div></section>
+
+<section id="project" class="page"><h2>Dự án</h2><div class="panel"><div class="form">
+<div class="field"><label>Tên dự án</label><input id="prname" value="Dự án mới"></div><div class="field"><label>Q thiết kế (m³/ngày)</label><input id="prq" value="20" type="number"></div><div class="field"><label>Ghi chú</label><input id="prnote" value=""></div></div>
+<div class="actions"><button class="btn primary" onclick="saveProject()">Lưu dự án</button><button class="btn" onclick="loadProject()">Tải dự án</button><button class="btn" onclick="exportJSON()">Xuất JSON</button></div><div id="prout" class="note"></div>
+<div class="actions"><label class="btn">Nhập JSON <input type="file" accept=".json,application/json" hidden onchange="importJSON(this.files[0])"></label></div>
+<h3>Danh sách dự án đã lưu</h3><div id="projectList"></div></div>
+<div class="techPanel projectTech">
+  <div class="techTitle">Công nghệ xử lý</div>
+  <div class="techSub">Chọn công nghệ và các công trình đơn vị tương ứng cho dự án.</div>
+  <div class="techRow">
+    <select id="techPreset" class="techSelect" onchange="applyTechPreset(this.value)">
+      <option value="custom">Tự chọn công trình</option>
+      <option value="physchem">Hóa lý: Điều hòa → Keo tụ → Lắng</option>
+      <option value="daf">DAF: Điều hòa → Keo tụ → Tuyển nổi</option>
+      <option value="uasb_ao">UASB + AO: Điều hòa → UASB → Anoxic → Aerotank → Lắng → Khử trùng</option>
+      <option value="ao">AO: Điều hòa → Anoxic → Aerotank → Lắng → Khử trùng</option>
+      <option value="sbr">SBR: Điều hòa → SBR → Lọc → Khử trùng</option>
+      <option value="full">Full: Điều hòa → Hóa lý → Sinh học → Khử trùng</option>
+    </select>
+  </div>
+  <div id="unitChecklist" class="unitChecklist"></div>
+  <div class="actions"><button class="btn primary" onclick="saveTechSelection()">Áp dụng cấu hình</button>
+  </div>
+  <div id="techMsg" class="syncNote"></div>
+</div>
+</section>
+
+<section id="standards" class="page"><h2>Quy phạm & thông số thiết kế</h2>
+<div class="panel"><div class="warn">Đây là thư viện cơ sở để hỗ trợ thiết kế sơ bộ. “Tham khảo” không phải giới hạn pháp lý. Khi lập hồ sơ chính thức phải kiểm tra bản tiêu chuẩn/quy chuẩn áp dụng cho đúng loại nước thải và thời điểm dự án.</div>
+<div class="actions"><select id="stdFilter" onchange="renderStandards()"><option value="all">Tất cả công trình</option><option value="equal">Điều hòa</option><option value="coag">Keo tụ – tạo bông</option><option value="settle">Lắng</option><option value="float">Tuyển nổi DAF</option><option value="uasb">UASB</option><option value="anoxic">Anoxic</option><option value="aero">Aerotank</option><option value="sbr">SBR</option><option value="filter">Lọc áp lực</option><option value="disinfect">Khử trùng</option><option value="sludge">Bể chứa bùn</option></select></div>
+<div id="standardsOut"></div></div>
+<div class="panel"><h3>Ghi chú về nguồn</h3>
+<ul><li><b>TCVN 7957:2023</b> là tiêu chuẩn thiết kế hệ thống thoát nước và công trình bên ngoài; VSQI xác nhận trạng thái còn hiệu lực.</li>
+<li><b>TCVN 7222:2022</b> được TCVN 7957:2023 viện dẫn cho trạm xử lý nước thải sinh hoạt tập trung.</li>
+<li>Các khoảng “tham khảo kỹ thuật” trong bảng được dùng để kiểm tra sơ bộ và cần hiệu chỉnh theo nước thải cụ thể.</li>
+</ul></div></section>
+
+
+<section id="compliance" class="page">
+  <h2>Kiểm tra quy phạm & thiết kế</h2>
+
+  <div class="panel complianceHero">
+    <div>
+      <div class="muted">WWTC Compliance Engine</div>
+      <h3 style="margin:4px 0 6px">Tự động rà soát thông số thiết kế</h3>
+      <p class="note" style="margin:0">
+        Hệ thống phân biệt <b>giới hạn pháp lý/tiêu chuẩn bắt buộc</b> với <b>khoảng tham khảo kỹ thuật</b>.
+        Không dùng khoảng tham khảo để kết luận “vi phạm QCVN”.
+      </p>
+    </div>
+    <div class="complianceSummary">
+      <div class="complianceKpi okKpi"><span>Trong khoảng</span><strong id="cmpOk">0</strong></div>
+      <div class="complianceKpi warnKpi"><span>Cần xem xét</span><strong id="cmpWarn">0</strong></div>
+      <div class="complianceKpi badKpi"><span>Không đạt pháp lý</span><strong id="cmpBad">0</strong></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="actions">
+      <button class="btn primary" type="button" onclick="runComplianceCheck()">↻ Kiểm tra toàn bộ</button>
+      <select id="cmpFilter" class="techSelect" style="max-width:260px" onchange="runComplianceCheck()">
+        <option value="all">Tất cả</option>
+        <option value="ok">Trong khoảng</option>
+        <option value="warn">Cần xem xét</option>
+        <option value="bad">Không đạt pháp lý</option>
+      </select>
+    </div>
+    <div id="complianceOut" style="margin-top:12px"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Nguyên tắc đánh giá</h3>
+    <table>
+      <tr><th>Mức</th><th>Ý nghĩa</th><th>Cách app xử lý</th></tr>
+      <tr><td><span class="cmpBadge cmpOk">XANH</span></td><td>Nằm trong khoảng tham khảo / điều kiện kiểm tra đã khai báo</td><td>Cho phép thiết kế tiếp tục, không có cảnh báo chính.</td></tr>
+      <tr><td><span class="cmpBadge cmpWarn">VÀNG</span></td><td>Nằm ngoài khoảng tham khảo hoặc thiếu dữ liệu kiểm chứng</td><td>Yêu cầu kỹ sư xem xét; không kết luận vi phạm pháp luật.</td></tr>
+      <tr><td><span class="cmpBadge cmpBad">ĐỎ</span></td><td>Chỉ dùng khi có giới hạn pháp lý rõ ràng trong cơ sở dữ liệu</td><td>Thông báo “Không đạt pháp lý” và chỉ rõ căn cứ.</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="geometry" class="page">
+  <h2>Hình học bể</h2>
+
+  <div class="panel">
+    <div class="form">
+      <div class="field">
+        <label>Dạng hình học</label>
+        <select id="geo_shape" onchange="geoUpdateUI()">
+          <option value="rect">Chữ nhật — L × W × H</option>
+          <option value="square">Vuông — L = W</option>
+          <option value="circle">Tròn — D × H</option>
+          <option value="cylinder">Trụ đứng — D × H</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Thể tích hữu ích V (m³)</label>
+        <input id="geo_v" type="number" value="20" step="0.1">
+      </div>
+      <div class="field">
+        <label>Chiều sâu hữu ích H (m)</label>
+        <input id="geo_h" type="number" value="3" step="0.1">
+      </div>
+      <div class="field" id="geo_ratio_box">
+        <label>Tỷ lệ L/W</label>
+        <input id="geo_ratio" type="number" value="2" step="0.1">
+      </div>
+      <div class="field">
+        <label>Freeboard (m)</label>
+        <input id="geo_fb" type="number" value="0.4" step="0.05">
+      </div>
+      <div class="field" id="geo_blocks_box">
+        <label>Số ngăn (tuỳ chọn)</label>
+        <input id="geo_blocks" type="number" value="1" min="1" step="1">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" type="button" onclick="geometryCalc()">Tự suy luận kích thước</button>
+      
+    </div>
+
+    <div id="geoout" style="margin-top:14px"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Kiểm tra hình học</h3>
+    <div id="geoCheck" class="note">Nhập V, H và dạng bể rồi bấm “Tự suy luận kích thước”.</div>
+  </div>
+</section>
+
+<section id="load" class="page"><h2>Tải lượng ô nhiễm</h2><div class="panel"><div class="form">
+<div class="field"><label>Q (m³/ngày)</label><input id="q" type="number" value="20"></div><div class="field"><label>BOD₅ (mg/L)</label><input id="bod" type="number" value="300"></div><div class="field"><label>COD (mg/L)</label><input id="cod" type="number" value="600"></div><div class="field"><label>TSS (mg/L)</label><input id="tss" type="number" value="250"></div><div class="field"><label>NH₄-N (mg/L)</label><input id="nh4" type="number" value="60"></div><div class="field"><label>TN (mg/L)</label><input id="tn" type="number" value="90"></div><div class="field"><label>TP (mg/L)</label><input id="tp" type="number" value="10"></div></div>
+<div class="actions"><button class="btn primary" onclick="loadCalc()">Tính</button></div><div id="loadout"></div></div></section>
+
+<section id="equal" class="page"><h2>Bể điều hòa</h2><div class="panel"><div class="form">
+<div class="field"><label>Q TB (m³/ngày)</label><input id="eq_q" value="20" type="number"></div><div class="field"><label>HRT (h)</label><input id="eq_h" value="8" type="number"></div><div class="field"><label>H hữu ích (m)</label><input id="eq_depth" value="3" type="number"></div><div class="field"><label>Freeboard (m)</label><input id="eq_fb" value="0.4" type="number"></div></div><div class="actions"><button class="btn primary" onclick="equalCalc()">Tính</button></div><div id="eqout"></div></div></section>
+
+<section id="coag" class="page"><h2>Keo tụ – tạo bông</h2><div class="panel"><div class="form">
+<div class="field"><label>Q (m³/h)</label><input id="cg_q" value="2" type="number"></div><div class="field"><label>PAC (mg/L)</label><input id="pac" value="50" type="number"></div><div class="field"><label>Polymer (mg/L)</label><input id="poly" value="2" type="number"></div><div class="field"><label>Thời gian keo tụ (phút)</label><input id="cg_t" value="5" type="number"></div><div class="field"><label>Thời gian tạo bông (phút)</label><input id="fl_t" value="20" type="number"></div></div><div class="actions"><button class="btn primary" onclick="coagCalc()">Tính</button></div><div id="cgout"></div></div></section>
+
+
+<section id="settle" class="page"><h2>Bể lắng</h2><div class="panel"><div class="form">
+<div class="field"><label>Q TB (m³/h)</label><input id="st_q" value="1" type="number"></div>
+<div class="field"><label>Q đỉnh (m³/h)</label><input id="st_peak" value="2" type="number"></div>
+<div class="field"><label>Tải trọng bề mặt (m³/m².d)</label><input id="st_ov" value="20" type="number"></div>
+<div class="field"><label>Chiều sâu nước hữu ích (m)</label><input id="st_d" value="3" type="number"></div>
+<div class="field"><label>Đường kính ống phân phối trung tâm (mm)</label><input id="st_pipe" value="150" type="number"></div>
+<div class="field"><label>Chiều cao vùng phân phối trung tâm (m)</label><input id="st_well_h" value="1.5" type="number"></div>
+</div><div class="actions"><button class="btn primary" type="button" onclick="settleCalc()">Tính</button></div><div id="stout"></div></div></section>
+
+<section id="float" class="page"><h2>Bể tuyển nổi DAF</h2><div class="panel"><div class="form">
+<div class="field"><label>Q TB (m³/h)</label><input id="fl_q" value="2" type="number"></div><div class="field"><label>Q đỉnh (m³/h)</label><input id="fl_peak" value="3" type="number"></div><div class="field"><label>Tải trọng bề mặt (m³/m².h)</label><input id="fl_ov" value="8" type="number"></div><div class="field"><label>Chiều sâu hữu ích (m)</label><input id="fl_d" value="2.5" type="number"></div><div class="field"><label>Thời gian lưu (phút)</label><input id="fl_hrt" value="15" type="number"></div><div class="field"><label>Tỷ lệ tuần hoàn nước áp lực (%)</label><input id="fl_recycle" value="15" type="number"></div><div class="field"><label>Áp suất bão hòa (bar)</label><input id="fl_pressure" value="5" type="number"></div><div class="field"><label>Liều PAC (mg/L)</label><input id="fl_pac" value="50" type="number"></div></div>
+<div class="actions"><button class="btn primary" onclick="floatCalc()">Tính tuyển nổi</button></div><div id="flout"></div></div></section>
+
+<section id="uasb" class="page"><h2>UASB</h2><div class="panel"><div class="form">
+<div class="field"><label>Q (m³/ngày)</label><input id="u_q" value="20" type="number"></div><div class="field"><label>COD vào (mg/L)</label><input id="u_cod" value="600" type="number"></div><div class="field"><label>OLR thiết kế (kg COD/m³.d)</label><input id="u_olr" value="3" type="number"></div><div class="field"><label>Chiều cao hữu ích (m)</label><input id="u_h" value="5" type="number"></div><div class="field"><label>Hiệu suất COD (%)</label><input id="u_rem" value="70" type="number"></div></div>
+<div class="actions"><button class="btn primary" onclick="uasbCalc()">Tính</button></div><div id="uout"></div></div></section>
+
+
+<section id="bio" class="page"><h2>Anoxic / Aerotank</h2>
+<div class="tabs"><button class="active" onclick="bioTab('aero',this)">Aerotank</button><button onclick="bioTab('anoxic',this)">Anoxic</button></div>
+<div id="aeroBox" class="panel">
+  <div class="tabs innerTabs">
+    <button class="active" type="button" onclick="aeroPart('bod',this)">1. Theo BOD / F-M</button>
+    <button type="button" onclick="aeroPart('nitr',this)">2. Nitrification NH₄-N</button>
+  </div>
+  <div id="aeroBodBox">
+    <div class="form">
+      <div class="field"><label>Q (m³/ngày)</label><input id="bq" value="150" type="number"></div>
+      <div class="field"><label>BOD₅ (mg/L)</label><input id="bbod" value="300" type="number"></div>
+      <div class="field"><label>MLSS (mg/L)</label><input id="bmlss" value="3500" type="number"></div>
+      <div class="field"><label>F/M (kg BOD/kg MLSS.d)</label><input id="bfm" value="0.15" type="number"></div>
+      <div class="field"><label>Hiệu suất BOD (%)</label><input id="brem" value="90" type="number"></div>
+    </div>
+    <div class="actions"><button class="btn primary" type="button" onclick="aeroCalc()">Tính theo BOD</button></div><div id="bout"></div>
+  </div>
+  <div id="aeroNitrBox" class="hidden">
+    <div class="form">
+      <div class="field"><label>Q (m³/ngày)</label><input id="bnq" value="150" type="number"></div>
+      <div class="field"><label>NH₄-N vào (mg/L)</label><input id="bnh4in" value="60" type="number"></div>
+      <div class="field"><label>NH₄-N ra (mg/L)</label><input id="bnh4out" value="5" type="number"></div>
+      <div class="field"><label>MLSS (mg/L)</label><input id="bnmlss" value="3500" type="number"></div>
+      <div class="field"><label>Tốc độ nitrification thiết kế (kg NH₄-N/kg MLSS.d)</label><input id="bnrate" value="0.04" type="number"></div>
+      <div class="field"><label>SRT thiết kế (ngày)</label><input id="bnsrt" value="15" type="number"></div>
+      <div class="field"><label>Nhiệt độ nước (°C)</label><input id="bntemp" value="25" type="number"></div>
+      <div class="field"><label>DO mục tiêu (mg/L)</label><input id="bndo" value="2" type="number"></div>
+    </div>
+    <div class="actions"><button class="btn primary" type="button" onclick="aeroNitrCalc()">Tính nitrification</button></div><div id="bnout"></div>
+  </div>
+</div>
+<div id="anoxicBox" class="panel hidden">
+  <div class="form">
+    <div class="field"><label>Q (m³/ngày)</label><input id="nq" value="20" type="number"></div>
+    <div class="field"><label>NO₃-N cần khử (mg/L)</label><input id="nno3" value="30" type="number"></div>
+    <div class="field"><label>HRT (h)</label><input id="nhrt" value="2" type="number"></div>
+    <div class="field"><label>Chiều sâu hữu ích (m)</label><input id="nd" value="3" type="number"></div>
+  </div><div class="actions"><button class="btn primary" onclick="anoxicCalc()">Tính Anoxic</button></div><div id="nout"></div>
+</div></section>
+
+
+<section id="sbr" class="page"><h2>SBR – thiết kế sơ bộ</h2>
+<div class="panel">
+  <div class="form">
+    <div class="field"><label>Q (m³/ngày)</label><input id="s_q" value="20" type="number"></div>
+    <div class="field"><label>BOD₅ (mg/L)</label><input id="s_bod" value="300" type="number"></div>
+    <div class="field"><label>NH₄-N vào (mg/L)</label><input id="s_nh4" value="60" type="number"></div>
+    <div class="field"><label>NH₄-N ra mục tiêu (mg/L)</label><input id="s_nh4out" value="5" type="number"></div>
+    <div class="field"><label>MLSS (mg/L)</label><input id="s_mlss" value="4000" type="number"></div>
+    <div class="field"><label>F/M thiết kế (kg BOD/kg MLSS.d)</label><input id="s_fm" value="0.15" type="number"></div>
+    <div class="field"><label>Tốc độ nitrification thiết kế (kg NH₄-N/kg MLSS.d)</label><input id="s_nrate" value="0.04" type="number"></div>
+    <div class="field"><label>Số mẻ/ngày</label><input id="s_batch" value="2" type="number"></div>
+    <div class="field"><label>Tỷ lệ trao đổi/xả mỗi mẻ (%)</label><input id="s_draw" value="30" type="number"></div>
+    <div class="field"><label>Thời gian lắng (h)</label><input id="s_settle" value="1" type="number"></div>
+    <div class="field"><label>Thời gian decant (h)</label><input id="s_decant" value="0.5" type="number"></div>
+    <div class="field"><label>Thời gian nạp (h)</label><input id="s_fill" value="2" type="number"></div>
+  </div>
+  <div class="actions"><button class="btn primary" onclick="sbrCalc()">Tính SBR</button></div>
+  <div id="sout"></div>
+</div>
+</section>
+
+
+<section id="filter" class="page"><h2>Lọc áp lực</h2><div class="panel"><div class="form">
+<div class="field"><label>Q lọc (m³/h)</label><input id="f_q" value="2" type="number"></div>
+<div class="field"><label>Tốc độ lọc (m/h)</label><input id="f_rate" value="8" type="number"></div>
+<div class="field"><label>Đường kính cột (mm)</label><input id="f_d" value="700" type="number"></div>
+<div class="field"><label>Chiều cao sỏi (m)</label><input id="f_gravel_h" value="0.20" type="number"></div>
+<div class="field"><label>Khối lượng riêng sỏi (kg/m³)</label><input id="f_gravel_rho" value="1600" type="number"></div>
+<div class="field"><label>Chiều cao cát (m)</label><input id="f_sand_h" value="0.50" type="number"></div>
+<div class="field"><label>Khối lượng riêng cát (kg/m³)</label><input id="f_sand_rho" value="1600" type="number"></div>
+<div class="field"><label>Chiều cao than anthracite (m)</label><input id="f_coal_h" value="0.50" type="number"></div>
+<div class="field"><label>Khối lượng riêng than (kg/m³)</label><input id="f_coal_rho" value="750" type="number"></div>
+</div><div class="actions"><button class="btn primary" type="button" onclick="filterCalc()">Tính</button></div><div id="fout"></div></div></section>
+
+<section id="disinfect" class="page"><h2>Khử trùng</h2><div class="panel"><div class="form">
+<div class="field"><label>Q (m³/ngày)</label><input id="d_q" value="20" type="number"></div><div class="field"><label>Liều Javen (mg/L as Cl₂)</label><input id="d_dose" value="5" type="number"></div><div class="field"><label>Cl₂ hữu hiệu dung dịch (%)</label><input id="d_conc" value="10" type="number"></div><div class="field"><label>Thời gian tiếp xúc (phút)</label><input id="d_t" value="30" type="number"></div></div><div class="actions"><button class="btn primary" onclick="disCalc()">Tính</button></div><div id="dout"></div></div></section>
+
+<section id="sludge" class="page"><h2>Bùn</h2><div class="panel"><div class="form">
+<div class="field"><label>Khối lượng chất rắn (kg DS/ngày)</label><input id="sl_ds" value="5" type="number"></div><div class="field"><label>Nồng độ bùn (% DS)</label><input id="sl_c" value="1" type="number"></div><div class="field"><label>Hệ số dự phòng</label><input id="sl_sf" value="1.2" type="number"></div></div><div class="actions"><button class="btn primary" onclick="sludgeCalc()">Tính</button></div><div id="slout"></div></div></section>
+
+<section id="pump" class="page"><h2>Bơm</h2><div class="panel"><div class="form"><div class="field"><label>Q (m³/h)</label><input id="p_q" value="5" type="number"></div><div class="field"><label>H tổng (m)</label><input id="p_h" value="15" type="number"></div><div class="field"><label>Hiệu suất (%)</label><input id="p_e" value="65" type="number"></div><div class="field"><label>Vận tốc mục tiêu (m/s)</label><input id="p_v" value="1.2" type="number"></div></div><div class="actions"><button class="btn primary" onclick="pumpCalc()">Tính</button></div><div id="pout"></div></div></section>
+
+<section id="air" class="page"><h2>Oxy & Blower</h2><div class="panel"><div class="form"><div class="field"><label>Q (m³/ngày)</label><input id="o_q" value="20" type="number"></div><div class="field"><label>BOD₅ (mg/L)</label><input id="o_bod" value="200" type="number"></div><div class="field"><label>NH₄-N (mg/L)</label><input id="o_nh4" value="60" type="number"></div><div class="field"><label>OTE (%)</label><input id="o_ote" value="8" type="number"></div><div class="field"><label>Hệ số an toàn</label><input id="o_sf" value="1.2" type="number"></div><div class="field"><label>Áp suất blower (mH₂O)</label><input id="o_h" value="5" type="number"></div><div class="field"><label>Hiệu suất blower (%)</label><input id="o_e" value="65" type="number"></div></div><div class="actions"><button class="btn primary" onclick="airCalc()">Tính</button></div><div id="oout"></div></div></section>
+
+<section id="chemical" class="page"><h2>Hóa chất</h2><div class="panel"><div class="form"><div class="field"><label>Q (m³/ngày)</label><input id="ch_q" value="20" type="number"></div><div class="field"><label>Liều (mg/L)</label><input id="ch_d" value="50" type="number"></div><div class="field"><label>Nồng độ dung dịch (%)</label><input id="ch_c" value="10" type="number"></div><div class="field"><label>Khối lượng riêng (kg/L)</label><input id="ch_rho" value="1.1" type="number"></div></div><div class="actions"><button class="btn primary" onclick="chemCalc()">Tính</button></div><div id="chout"></div></div></section>
+
+<section id="hydraulic" class="page"><h2>Thủy lực – đường ống</h2><div class="panel"><div class="form"><div class="field"><label>Q (m³/h)</label><input id="h_q" value="5" type="number"></div><div class="field"><label>Đường kính trong (mm)</label><input id="h_d" value="60" type="number"></div><div class="field"><label>Chiều dài ống (m)</label><input id="h_l" value="50" type="number"></div><div class="field"><label>Hệ số ma sát Darcy f</label><input id="h_f" value="0.025" type="number"></div><div class="field"><label>Tổng K phụ kiện</label><input id="h_k" value="5" type="number"></div></div><div class="actions"><button class="btn primary" onclick="hydCalc()">Tính</button></div><div id="hout"></div></div></section>
+
+<section id="electric" class="page"><h2>Điện</h2><div class="panel"><div class="form"><div class="field"><label>Công suất P (kW)</label><input id="e_kw" value="3" type="number"></div><div class="field"><label>Điện áp (V)</label><input id="e_v" value="380" type="number"></div><div class="field"><label>cosφ</label><input id="e_pf" value="0.85" type="number"></div><div class="field"><label>Hiệu suất motor</label><input id="e_eff" value="0.9" type="number"></div></div><div class="actions"><button class="btn primary" onclick="elecCalc()">Tính</button></div><div id="eout"></div></div></section>
+
+<section id="units" class="page"><h2>Đổi đơn vị</h2><div class="panel"><div class="form"><div class="field"><label>Giá trị</label><input id="un_v" value="1" type="number"></div><div class="field"><label>Từ</label><select id="un_f"><option>m3/h</option><option>L/s</option><option>m3/day</option><option>bar</option><option>mH2O</option><option>kW</option><option>HP</option><option>mm</option><option>inch</option></select></div><div class="field"><label>Sang</label><select id="un_t"><option>m3/h</option><option>L/s</option><option>m3/day</option><option>bar</option><option>mH2O</option><option>kW</option><option>HP</option><option>mm</option><option>inch</option></select></div></div><div class="actions"><button class="btn primary" onclick="unitCalc()">Đổi</button></div><div id="unout"></div></div></section>
+
+</main></div>
+<script>
+const $=id=>document.getElementById(id),
+v=id=>{const e=$(id);if(!e)return 0;const n=parseFloat(e.value);return Number.isFinite(n)?n:0},
+fmt=(x,d=2)=>Number(x).toLocaleString('vi-VN',{maximumFractionDigits:d});
+function tab(id){
+  const pages=document.querySelectorAll('.page');
+  const target=$(id);
+  if(!target) return false;
+  pages.forEach(x=>x.classList.remove('active'));
+  target.classList.add('active');
+  document.querySelectorAll('nav button[data-p]').forEach(x=>x.classList.toggle('active',x.dataset.p===id));
+  const mobile=$('mobileNav');
+  if(mobile) mobile.value=id;
+  return true;
+}
+document.addEventListener('click',function(e){
+  const b=e.target.closest('nav button[data-p]');
+  if(!b) return;
+  e.preventDefault();
+  tab(b.dataset.p);
+});
+function table(a){return '<table>'+a.map(r=>'<tr><th>'+r[0]+'</th><td>'+r[1]+'</td></tr>').join('')+'</table>'}
+function box(txt,type='ok'){return '<div class="'+type+'">'+txt+'</div>'}
+function collectInputs(){let data={};document.querySelectorAll('input,select').forEach(el=>{if(el.id)data[el.id]=el.value});return data}
+function applyInputs(data){Object.entries(data||{}).forEach(([id,val])=>{let el=$(id);if(el)el.value=val})}
+function getProjects(){try{return JSON.parse(localStorage.getItem('dvnProjects')||'{}')}catch(e){return {}}}
+function saveProject(){
+  let name=$('prname').value.trim()||'Dự án mới',projects=getProjects();
+  projects[name]={name:name,q:$('prq').value,note:$('prnote').value,inputs:collectInputs(),
+    tech:(typeof getSelectedUnits==='function'?getSelectedUnits():[]),
+    techPreset:$('techPreset')?.value||'custom',ts:new Date().toISOString()};
+  localStorage.setItem('dvnProjects',JSON.stringify(projects));
+  localStorage.setItem('dvnCurrentProject',name);
+  renderProjectList();$('prout').textContent='Đã lưu toàn bộ thông số dự án: '+name;
+}
+function loadProject(name){
+  let projects=getProjects(),key=name||localStorage.getItem('dvnCurrentProject'),x=projects[key];
+  if(!x){$('prout').textContent='Chưa có dự án lưu.';renderProjectList();return}
+  $('prname').value=x.name;$('prq').value=x.q;$('prnote').value=x.note||'';
+  applyInputs(x.inputs||{});
+  if(x.tech) localStorage.setItem('wwtcSelectedUnits',JSON.stringify(x.tech));
+  if(x.techPreset) localStorage.setItem('wwtcTechPreset',x.techPreset);
+  if(typeof loadTechSelection==='function')loadTechSelection();
+  localStorage.setItem('dvnCurrentProject',key);renderProjectList();
+  $('prout').textContent='Đã mở dự án: '+x.name;
+  [loadCalc,equalCalc,coagCalc,settleCalc,floatCalc,uasbCalc,aeroCalc,anoxicCalc,sbrCalc,filterCalc,disCalc,sludgeCalc,pumpCalc,airCalc,chemCalc,hydCalc,elecCalc,unitCalc].forEach(fn=>{try{fn()}catch(e){console.warn(e)}});
+}
+function deleteProject(name){
+  let projects=getProjects();if(!Object.prototype.hasOwnProperty.call(projects,name))return;
+  delete projects[name];localStorage.setItem('dvnProjects',JSON.stringify(projects));
+  if(localStorage.getItem('dvnCurrentProject')===name)localStorage.removeItem('dvnCurrentProject');
+  renderProjectList();$('prout').textContent='Đã xóa dự án: '+name;
+}
+function renderProjectList(){
+  let projects=getProjects(),keys=Object.keys(projects),boxel=$('projectList');if(!boxel)return;
+  if(!keys.length){boxel.innerHTML='<div class="note">Chưa có dự án nào.</div>';return}
+  boxel.innerHTML='<div class="projectTableWrap"><table><tr><th>Dự án</th><th>Cập nhật</th><th>Thao tác</th></tr>'+
+  keys.map(function(k){
+    return '<tr><td>'+esc(k)+'</td><td>'+new Date(projects[k].ts||Date.now()).toLocaleString('vi-VN')+'</td><td class="projectActions">'+
+    '<button type="button" class="btn projectOpen" data-project="'+encodeURIComponent(k)+'">Mở</button> '+
+    '<button type="button" class="btn projectDelete" data-project="'+encodeURIComponent(k)+'">Xóa</button></td></tr>';
+  }).join('')+'</table></div>';
+}
+function exportJSON(){let projects=getProjects(),current=localStorage.getItem('dvnCurrentProject');let x=projects[current]||{name:$('prname').value,q:$('prq').value,note:$('prnote').value,inputs:collectInputs(),ts:new Date().toISOString()};let a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(x,null,2));a.download=(x.name||'dvn-project').replace(/[^\w\-À-ỹ ]/g,'_')+'.json';a.click()}
+function importJSON(file){if(!file)return;let r=new FileReader();r.onload=e=>{try{let x=JSON.parse(e.target.result),name=x.name||'Dự án nhập',projects=getProjects();projects[name]=x;localStorage.setItem('dvnProjects',JSON.stringify(projects));localStorage.setItem('dvnCurrentProject',name);loadProject(name)}catch(err){$('prout').textContent='File JSON không hợp lệ.'}};r.readAsText(file)}
+
+const STDS=[
+{key:'equal',name:'Bể điều hòa',source:'TCVN 7957:2023 + tham khảo thiết kế',items:[
+['Thời gian lưu','6–12 h','Tham khảo kỹ thuật; chọn theo dao động Q/tải.'],
+['Chiều sâu hữu ích','3–5 m','Tham khảo; phụ thuộc kết cấu và thiết bị khuấy/sục khí.'],
+['Freeboard','≈0,3–0,5 m','Tham khảo kết cấu/vận hành.'],
+['Khuấy/sục khí','Đảm bảo chống lắng, yếm khí không kiểm soát','Yêu cầu công nghệ; công suất cần tính theo hình dạng bể và thiết bị.']]},
+{key:'coag',name:'Keo tụ – tạo bông',source:'Tham khảo công nghệ; xác định bằng jar-test',items:[
+['Keo tụ nhanh','≈1–5 min','Khoảng tham khảo; G phải kiểm tra theo hóa chất và nước thực tế.'],
+['Tạo bông','≈15–30 min','Khoảng tham khảo; nên xác định bằng jar-test.'],
+['G tạo bông','≈20–80 s⁻¹','Tham khảo; giảm dần theo các ngăn.'],
+['Liều PAC/polymer','Không có giá trị cố định','Bắt buộc xác định bằng jar-test/pilot khi yêu cầu độ tin cậy cao.']]},
+{key:'settle',name:'Bể lắng',source:'TCVN 7957:2023 + tham khảo tải trọng',items:[
+['Tải trọng bề mặt lắng sơ cấp','≈20–40 m³/m².d','Tham khảo; cần kiểm tra theo loại bể, Qmax và đặc tính bông/bùn.'],
+['Tải trọng bề mặt lắng thứ cấp','≈15–30 m³/m².d','Tham khảo; cần kiểm tra SVI, MLSS, SRT và peak flow.'],
+['Chiều sâu nước','≈3–4,5 m','Tham khảo sơ bộ.'],
+['Kiểm tra bùn','SLR/flux, SVI, MLSS','Không được chỉ kiểm tra theo diện tích bề mặt.']]},
+{key:'float',name:'Tuyển nổi DAF',source:'Tham khảo DAF; thiết bị và pilot quyết định',items:[
+['Tải trọng bề mặt','≈5–15 m³/m².h','Khoảng sơ bộ; phụ thuộc loại nước và thiết kế DAF.'],
+['HRT vùng tuyển nổi','≈10–30 min','Tham khảo.'],
+['Recycle nước áp lực','≈10–30% Q','Tham khảo; phải tính theo air/solid ratio và độ hòa tan khí.'],
+['Áp suất bão hòa','≈4–6 bar','Tham khảo thiết bị; không phải giới hạn TCVN chung.'],
+['A/S ratio','Tính theo kg air/kg solids','Cần xác định từ tải SS/dầu mỡ và hiệu suất hòa tan.']]},
+{key:'uasb',name:'UASB',source:'Tham khảo UASB; không gán cứng là TCVN',items:[
+['OLR','≈1–5 kg COD/m³.d','Khoảng sơ bộ; tải cho phép phụ thuộc nhiệt độ, tính chất COD, bùn hạt và khởi động.'],
+['HRT','≈6–12 h','Tham khảo; phải kiểm tra đồng thời OLR và vận tốc dòng lên.'],
+['Vận tốc dòng lên','≈0,5–1,0 m/h','Tham khảo; kiểm tra theo bùn hạt và thiết bị phân phối.'],
+['Chiều cao hữu ích','≈4–7 m','Tham khảo hình học; cần kiểm tra separator và phân phối dòng.']]},
+{key:'anoxic',name:'Bể Anoxic',source:'TCVN 7957:2023 (hướng dẫn AO/AAO) + tham khảo',items:[
+['HRT','≈1–4 h','Tham khảo; phụ thuộc NO₃ load, carbon và recycle.'],
+['DO','<0,5 mg/L','Mục tiêu vận hành thường dùng để duy trì điều kiện thiếu khí.'],
+['Tuần hoàn nội','≈200–400% Q','Khoảng tham khảo; tính theo NO₃ cần khử và mục tiêu TN.'],
+['Khuấy','Đủ giữ bùn lơ lửng, không tạo DO cao','Chọn theo W/m³ và hình dạng bể.']]},
+{key:'aero',name:'Aerotank',source:'TCVN 7957:2023 + tham khảo bùn hoạt tính',items:[
+['MLSS','≈2.500–5.000 mg/L','Khoảng thiết kế thường dùng; phải kiểm tra SVI/SRT và tải lắng.'],
+['F/M','≈0,05–0,30 kg BOD/kg MLSS.d','Khoảng tham khảo rộng; nitrification thường cần tải thấp/SRT cao hơn.'],
+['DO','≈1,5–3,0 mg/L','Mục tiêu vận hành tham khảo; cần kiểm tra theo NH₄ và alpha factor.'],
+['SRT nitrification','Thường ≥10–15 d ở điều kiện thuận lợi','Không phải một giá trị bắt buộc chung; cần tính theo nhiệt độ và yêu cầu NH₄.'],
+['HRT','≈6–12 h','Chỉ là khoảng sơ bộ; tải NH₄/TN có thể cần lớn hơn.']]},
+{key:'sbr',name:'SBR',source:'TCVN 7957:2023 + tham khảo thiết kế SBR',items:[
+['Số mẻ/ngày','≈2–4 mẻ/d','Tham khảo; phụ thuộc Q, thời gian chu kỳ và thể tích bể.'],
+['Thời gian lắng','≈0,5–2 h','Tham khảo; phải kiểm tra tốc độ lắng thực tế.'],
+['Thời gian decant','≈0,25–1 h','Tham khảo; phụ thuộc thiết bị rút nước.'],
+['MLSS','≈3.000–6.000 mg/L','Khoảng tham khảo; phải kiểm tra SVI và tải lắng.'],
+['DO pha hiếu khí','≈1,5–3,0 mg/L','Mục tiêu vận hành tham khảo.'],
+['Tỷ lệ xả mỗi mẻ','≈20–40% thể tích','Tham khảo; ảnh hưởng thể tích làm việc, SRT và khả năng chịu tải.'],
+['NH₄ control','Có thể dùng NH₄/DO làm logic kết thúc pha hiếu khí','Là chiến lược điều khiển, không phải quy định bắt buộc.']]},
+{key:'filter',name:'Lọc áp lực',source:'Tham khảo lọc áp lực',items:[
+['Tốc độ lọc','≈5–15 m/h','Khoảng sơ bộ; phụ thuộc vật liệu lọc và chất lượng nước.'],
+['Chiều cao vật liệu','≈0,8–1,5 m','Tham khảo.'],
+['Backwash','Theo tổn thất áp lực và chất lượng nước','Không nên chỉ dùng thời gian cố định.']]},
+{key:'disinfect',name:'Khử trùng',source:'Thiết kế theo mục tiêu vi sinh và quy chuẩn áp dụng',items:[
+['Thời gian tiếp xúc chlorine','≈15–30 min','Khoảng tham khảo; phải xét CT, pH, nhiệt độ và chlorine demand.'],
+['Liều chlorine','Không có liều cố định','Phải xác định theo chlorine demand và residual yêu cầu.'],
+['Bể tiếp xúc','Có vách hướng dòng/baffle','Giảm short-circuiting và tăng hiệu quả CT.']]},
+{key:'sludge',name:'Bể chứa bùn',source:'Tham khảo thiết kế bùn',items:[
+['Thời gian chứa','≈1–3 ngày','Tham khảo; phụ thuộc phương án ép bùn và lịch vận hành.'],
+['Nồng độ bùn','≈0,5–3% DS','Phụ thuộc nguồn bùn và thiết bị.'],
+['Freeboard','≈0,3–0,5 m','Tham khảo kết cấu/vận hành.']]}
+];
+
+function renderStandards(){
+ let f=$('stdFilter').value, rows=[];
+ STDS.filter(s=>f==='all'||s.key===f).forEach(s=>{
+  rows.push('<h3 class="sectionTitle">'+s.name+' <span class="stdtag">'+s.source+'</span></h3>');
+  rows.push('<table><tr><th>Thông số</th><th>Khoảng / tiêu chí</th><th>Ghi chú</th></tr>'+s.items.map(x=>'<tr><td><b>'+x[0]+'</b></td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>').join('')+'</table>');
+ });
+ $('standardsOut').innerHTML=rows.join('<br>');
+}
+
+
+function setv(id,val){
+  let el=$(id);
+  if(el && Number.isFinite(Number(val))) el.value=String(Number(val));
+}
+function syncDesignInputs(recalc){
+  let q=v('q'),bod=v('bod'),cod=v('cod'),nh4=v('nh4');
+  if(!q) return;
+  setv('eq_q',q);
+  setv('cg_q',q/24);
+  setv('st_q',q/24);
+  setv('st_peak',q/24*1.5);
+  setv('fl_q',q/24);
+  setv('fl_peak',q/24*1.5);
+  setv('u_q',q); setv('u_cod',cod);
+  setv('bq',q); setv('bbod',bod);
+  setv('bnq',q); setv('bnh4in',nh4);
+  setv('nq',q);
+  setv('s_q',q); setv('s_bod',bod); setv('s_nh4',nh4);
+  setv('f_q',q/24);
+  setv('d_q',q);
+  setv('o_q',q); setv('o_bod',bod); setv('o_nh4',nh4);
+  setv('ch_q',q);
+  setv('h_q',q/24);
+  if(recalc){
+    [equalCalc,coagCalc,settleCalc,floatCalc,uasbCalc,aeroCalc,anoxicCalc,sbrCalc,filterCalc,disCalc,sludgeCalc,pumpCalc,airCalc,chemCalc,hydCalc,elecCalc].forEach(function(fn){try{fn()}catch(e){console.warn('WWTC sync:',e)}});
+  }
+}
+function loadCalc(){
+  let q=v('q');
+  if(q<=0){$('loadout').innerHTML=box('Q phải lớn hơn 0.','warn');return;}
+  let names=[['BOD₅',v('bod')],['COD',v('cod')],['TSS',v('tss')],['NH₄-N',v('nh4')],['TN',v('tn')],['TP',v('tp')]];
+  $('loadout').innerHTML=table(names.map(x=>[x[0],fmt(x[1])+' mg/L | '+fmt(q*x[1]/1000)+' kg/d']));
+  syncDesignInputs(true);
+}
+function equalCalc(){
+  let q=v('eq_q'),hrt=v('eq_h'),V=q*hrt/24,H=v('eq_depth');
+  if(q<=0||hrt<=0||H<=0){$('eqout').innerHTML=box('Q, HRT và chiều sâu phải lớn hơn 0.','warn');return;}
+  let area=V/H;
+  $('eqout').innerHTML=table([['Thể tích hữu ích',fmt(V)+' m³'],['Diện tích mặt bằng tối thiểu',fmt(area)+' m²'],['Chiều sâu nước',fmt(H)+' m'],['Freeboard',fmt(v('eq_fb'))+' m'],['Chiều cao tổng sơ bộ',fmt(H+v('eq_fb'))+' m']])}
+function coagCalc(){
+  let q=v('cg_q'),pacDose=v('pac'),polyDose=v('poly'),ct=v('cg_t'),ft=v('fl_t');
+  if(q<=0||ct<=0||ft<=0||pacDose<0||polyDose<0){$('cgout').innerHTML=box('Q và thời gian keo tụ/tạo bông phải > 0; liều hóa chất không được âm.','warn');return;}
+  let pac=q*pacDose/1000,poly=q*polyDose/1000,vc=q/60*ct,vf=q/60*ft;$('cgout').innerHTML=table([['PAC',fmt(pac)+' kg/h'],['Polymer',fmt(poly)+' kg/h'],['Thể tích vùng keo tụ',fmt(vc)+' m³'],['Thể tích vùng tạo bông',fmt(vf)+' m³']])+'<div class="formula">V = Q × t/60; khối lượng hóa chất = Q × liều / 1000.</div>'}
+function settleCalc(){
+  let qh=v('st_q'),peakh=v('st_peak'),ov=v('st_ov'),H=v('st_d');
+  if(qh<=0||peakh<=0||ov<=0||H<=0){$('stout').innerHTML=box('Q, Qđỉnh, tải trọng bề mặt và chiều sâu phải lớn hơn 0.','warn');return;}
+  let q=qh*24,peak=peakh*24,A=q/ov,Ap=peak/ov,Afinal=Math.max(A,Ap),D=Math.sqrt(4*Afinal/Math.PI),V=Afinal*H;
+  let pd=v('st_pipe')/1000,Aw=Math.PI*pd*pd/4,Qpk=v('st_peak')/3600,vel=Aw>0?Qpk/Aw:0,Vwell=Math.PI*(pd/2)**2*v('st_well_h');
+  $('stout').innerHTML=table([['Diện tích theo QTB',fmt(A)+' m²'],['Diện tích theo Qđỉnh',fmt(Ap)+' m²'],['Diện tích thiết kế chọn',fmt(Afinal)+' m²'],['Đường kính bể lắng tròn',fmt(D,2)+' m'],['Chiều sâu hữu ích',fmt(H)+' m'],['Thể tích bể lắng cuối cùng',fmt(V)+' m³'],['Đường kính ống phân phối trung tâm',fmt(v('st_pipe'),0)+' mm'],['Vận tốc trong ống @ Qđỉnh',fmt(vel)+' m/s'],['Thể tích vùng phân phối trung tâm',fmt(Vwell)+' m³']])+
+  (vel>0.3?box('Vận tốc qua ống trung tâm đang cao; cần kiểm tra lại đường kính.','warn'):box('Hình học bể và ống phân phối đã được tính sơ bộ.'));
+}
+function floatCalc(){
+  let q=v('fl_q'),peak=v('fl_peak'),ov=v('fl_ov'),H=v('fl_d'),hrt=v('fl_hrt'),
+      re=v('fl_recycle')/100,p=v('fl_pressure'),pac=v('fl_pac'),warns=[];
+  if(q<=0||peak<=0||ov<=0||H<=0||hrt<=0){$('flout').innerHTML=box('Q, Qđỉnh, tải trọng, chiều sâu và HRT phải lớn hơn 0.','warn');return;}
+  let A=peak/ov, Vsurf=A*H, Vhrt=q*hrt/60, Afinal=Math.max(A,Vhrt/H), Vfinal=Afinal*H,
+      qr=q*re, pacload=q*pac/1000;
+  if(Vhrt>Vsurf*1.01)warns.push('HRT khống chế lớn hơn tải trọng bề mặt; thể tích chọn đã lấy theo HRT.');
+  if(re<=0)warns.push('Chưa bố trí tuần hoàn nước áp lực; cần xác định rõ sơ đồ bão hòa và recycle.');
+  $('flout').innerHTML=table([
+    ['Diện tích theo Qđỉnh',fmt(A)+' m²'],
+    ['Diện tích theo HRT',fmt(Vhrt/H)+' m²'],
+    ['Diện tích thiết kế chọn',fmt(Afinal)+' m²'],
+    ['Thể tích theo tải trọng + H',fmt(Vsurf)+' m³'],
+    ['Thể tích theo HRT',fmt(Vhrt)+' m³'],
+    ['Thể tích thiết kế chọn',fmt(Vfinal)+' m³'],
+    ['Lưu lượng tuần hoàn áp lực',fmt(qr)+' m³/h'],
+    ['Áp suất bão hòa nhập',fmt(p)+' bar'],
+    ['Tải PAC',fmt(pacload)+' kg/h']
+  ])+(warns.length?warns.map(x=>box(x,'warn')).join(''):box('Đã chọn kích thước theo điều kiện khống chế lớn hơn giữa tải trọng bề mặt và HRT. Cần kiểm tra A/S ratio và catalogue DAF.'))}
+function uasbCalc(){
+  let q=v('u_q'),cod=v('u_cod'),olr=v('u_olr'),H=v('u_h');
+  if(q<=0||cod<0||olr<=0||H<=0){$('uout').innerHTML=box('Q, OLR và chiều cao phải > 0; COD không được âm.','warn');return;}
+  let load=q*cod/1000,V=load/olr,A=V/H;$('uout').innerHTML=table([['Tải COD',fmt(load)+' kg/d'],['Thể tích UASB theo OLR',fmt(V)+' m³'],['Diện tích mặt bằng sơ bộ',fmt(A)+' m²'],['COD sau xử lý @ hiệu suất đặt',fmt(cod*(1-v('u_rem')/100))+' mg/L']])+'<div class="warn">OLR cần kiểm tra theo nhiệt độ, COD dễ phân hủy, bùn hạt, vận tốc dòng lên và giai đoạn khởi động.</div>'}
+function aeroPart(x,b){
+  document.querySelectorAll('.innerTabs button').forEach(z=>z.classList.remove('active'));
+  b.classList.add('active');
+  $('aeroBodBox').classList.toggle('hidden',x!=='bod');
+  $('aeroNitrBox').classList.toggle('hidden',x!=='nitr');
+  if(x==='nitr' && typeof syncDesignInputs==='function') syncDesignInputs(false);
+}
+function aeroCalc(){
+  let q=v('bq'),bod=v('bbod'),mlss=v('bmlss'),fm=v('bfm'),remPct=v('brem');
+  if(q<=0||bod<0||mlss<=0||fm<=0||remPct<0||remPct>100){$('bout').innerHTML=box('Kiểm tra Q, BOD, MLSS, F/M và hiệu suất BOD.','warn');return;}
+  let L=q*bod/1000,V=L/(fm*mlss/1000),hrt=V/q*24,rem=L*remPct/100;
+  $('bout').innerHTML=table([['Tải BOD vào',fmt(L)+' kg/d'],['Thể tích Aerotank theo F/M',fmt(V)+' m³'],['HRT tương ứng',fmt(hrt)+' h'],['BOD loại bỏ',fmt(rem)+' kg/d'],['F/M thiết kế',fmt(v('bfm'))+' kg BOD/kg MLSS.d']])+box('Phần này tính theo tải hữu cơ. Với yêu cầu xử lý NH₄-N, cần kiểm tra thêm tab nitrification.');
+}
+function aeroNitrCalc(){
+  let q=v('bnq'),ni=v('bnh4in'),no=v('bnh4out'),mlss=v('bnmlss'),rate=v('bnrate'),srt=v('bnsrt'),temp=v('bntemp'),doTarget=v('bndo');
+  let d=Math.max(0,ni-no),load=q*d/1000,V=rate>0?load/(rate*mlss/1000):0,o2=load*4.57,alk=load*7.14;
+  let srtMin=temp<20?15:(temp<25?12:10),warn=[];
+  if(rate<=0)warn.push('Tốc độ nitrification phải > 0 để tính thể tích.');
+  if(srt<srtMin)warn.push('SRT thấp hơn giá trị tham khảo sơ bộ; SRT thực tế cần tính theo nhiệt độ, DO, độc chất và yêu cầu NH₄-N.');
+  if(doTarget<1.5)warn.push('DO mục tiêu thấp; cần kiểm tra khả năng duy trì nitrification.');
+  $('bnout').innerHTML=table([['NH₄-N cần xử lý',fmt(d)+' mg/L'],['Tải NH₄-N cần nitrify',fmt(load)+' kg/d'],['Thể tích Aerotank theo nitrification',fmt(V)+' m³'],['Nhu cầu O₂ nitrification',fmt(o2)+' kg O₂/d'],['Nhu cầu kiềm tương đương',fmt(alk)+' kg CaCO₃/d'],['SRT thiết kế',fmt(srt)+' d'],['SRT tham khảo tối thiểu',fmt(srtMin)+' d'],['DO mục tiêu',fmt(doTarget)+' mg/L'],['Nhiệt độ thiết kế',fmt(temp)+' °C']])+
+  (warn.length?warn.map(x=>box(x,'warn')).join(''):box('Kiểm tra nitrification sơ bộ đạt theo các giả thiết đã nhập.'));
+}
+function anoxicCalc(){let q=v('nq'),V=q*v('nhrt')/24,A=V/v('nd'),load=q*v('nno3')/1000;$('nout').innerHTML=table([['Thể tích Anoxic',fmt(V)+' m³'],['Diện tích mặt bằng',fmt(A)+' m²'],['Tải NO₃-N cần khử',fmt(load)+' kg/d']])+'<div class="warn">Nhu cầu carbon và tuần hoàn nội phải kiểm tra theo NO₃ load, rbCOD/SCOD và mục tiêu TN.</div>'}
+function bioTab(x,b){
+  const section=b.closest('#bio');
+  if(section) section.querySelectorAll(':scope > .tabs button').forEach(z=>z.classList.remove('active'));
+  b.classList.add('active');
+  $('aeroBox').classList.toggle('hidden',x!=='aero');
+  $('anoxicBox').classList.toggle('hidden',x!=='anoxic');
+}
+function sbrCalc(){
+  let q=v('s_q'),bod=v('s_bod'),nh4=v('s_nh4'),nh4out=v('s_nh4out'),
+      mlss=v('s_mlss'),fm=v('s_fm'),nrate=v('s_nrate'),b=v('s_batch'),
+      draw=v('s_draw')/100,settle=v('s_settle'),decant=v('s_decant'),fill=v('s_fill');
+
+  if(q<=0||b<=0||draw<=0||draw>1||mlss<=0){
+    $('sout').innerHTML=box('Kiểm tra Q, số mẻ, MLSS và tỷ lệ trao đổi/xả. Tỷ lệ trao đổi phải >0 và ≤100%.','warn');return;
+  }
+
+  // Primary SBR sizing: daily flow -> batch volume -> exchange ratio -> Vmax.
+  let Vbatch=q/b;
+  let Vexchange=Vbatch/draw;
+  let Vmin=Vexchange-Vbatch;
+
+  // Independent organic-load check.
+  let Lbod=q*bod/1000;
+  let Vbod=fm>0?Lbod/(fm*mlss/1000):0;
+
+  // Independent nitrification check.
+  let dnh4=Math.max(0,nh4-nh4out);
+  let Lnh4=q*dnh4/1000;
+  let Vnh4=nrate>0?Lnh4/(nrate*mlss/1000):0;
+
+  let Vdesign=Math.max(Vexchange,Vbod,Vnh4);
+  let VbatchActual=Vbatch;
+  let drawActual=VbatchActual/Vdesign*100;
+  let VminDesign=Vdesign-VbatchActual;
+  let cycle=24/b;
+  if(fill<0||settle<0||decant<0||fill+settle+decant>cycle){
+    $('sout').innerHTML=box('Tổng thời gian nạp + lắng + decant không được vượt quá chu kỳ 24/số mẻ.','warn');return;
+  }
+  let reaction=cycle-fill-settle-decant;
+  let hrt=Vdesign/q*24;
+  let fmActual=Vdesign>0?Lbod/(Vdesign*mlss/1000):0;
+  let nh4RateActual=Vdesign>0?Lnh4/(Vdesign*mlss/1000):0;
+
+  let controlling=Vexchange>=Vbod&&Vexchange>=Vnh4?'Trao đổi nước':
+                  (Vbod>=Vexchange&&Vbod>=Vnh4?'BOD / F-M':'Nitrification NH₄-N');
+  let warns=[];
+  if(drawActual>40)warns.push('Tỷ lệ trao đổi thực tế >40%; cần kiểm tra chiều sâu mực nước và chế độ SBR.');
+  if(reaction<=0)warns.push('Tổng thời gian nạp + phản ứng + lắng + decant vượt chu kỳ.');
+  else if(reaction<2)warns.push('Thời gian còn lại cho phản ứng/sục khí thấp.');
+  if(Vdesign>Vexchange*1.01)warns.push('Thể tích thiết kế bị khống chế bởi tải xử lý, lớn hơn thể tích theo tỷ lệ trao đổi ban đầu; tỷ lệ trao đổi thực tế đã được tính lại.');
+  if(Vdesign>Vexchange*1.01 && drawActual<20)warns.push('Tỷ lệ trao đổi thực tế <20%; nên kiểm tra lại số mẻ hoặc cấu hình bể.');
+  if(nh4<=nh4out)warns.push('NH₄-N vào không cao hơn mục tiêu; kiểm tra nitrification không chi phối.');
+
+  $('sout').innerHTML=
+    '<div class="resultTitle">1. Xác định thể tích theo chế độ SBR</div>'+
+    table([
+      ['Lưu lượng Q',fmt(q)+' m³/d'],
+      ['Số mẻ/ngày',fmt(b)],
+      ['Nước nạp mỗi mẻ',fmt(Vbatch)+' m³/mẻ'],
+      ['Tỷ lệ trao đổi/xả đặt',fmt(draw*100)+' %'],
+      ['Thể tích Vmax theo trao đổi',fmt(Vexchange)+' m³'],
+      ['Thể tích Vmin theo trao đổi',fmt(Vmin)+' m³']
+    ])+
+    '<div class="resultTitle">2. Kiểm tra độc lập theo tải</div>'+
+    table([
+      ['Tải BOD',fmt(Lbod)+' kg/d'],
+      ['Thể tích theo BOD / F-M',fmt(Vbod)+' m³'],
+      ['NH₄-N cần xử lý',fmt(dnh4)+' mg/L'],
+      ['Tải NH₄-N cần nitrify',fmt(Lnh4)+' kg/d'],
+      ['Thể tích theo nitrification',fmt(Vnh4)+' m³']
+    ])+
+    '<div class="resultTitle">3. Thể tích thiết kế chọn</div>'+
+    table([
+      ['Điều kiện khống chế',controlling],
+      ['Vmax SBR thiết kế',fmt(Vdesign)+' m³'],
+      ['V nước nạp mỗi mẻ',fmt(VbatchActual)+' m³/mẻ'],
+      ['Vmin sau decant',fmt(VminDesign)+' m³'],
+      ['Tỷ lệ trao đổi thực tế',fmt(drawActual)+' %'],
+      ['HRT tương đương theo V/Q',fmt(hrt)+' h'],
+      ['F/M thực tế tại V thiết kế',fmt(fmActual)+' kg BOD/kg MLSS.d'],
+      ['Tải nitrification thực tế trên MLSS',fmt(nh4RateActual)+' kg NH₄-N/kg MLSS.d']
+    ])+
+    '<div class="resultTitle">4. Kiểm tra chu kỳ</div>'+
+    table([
+      ['Chu kỳ mỗi mẻ',fmt(cycle)+' h'],
+      ['Thời gian nạp',fmt(fill)+' h'],
+      ['Thời gian lắng',fmt(settle)+' h'],
+      ['Thời gian decant',fmt(decant)+' h'],
+      ['Thời gian còn lại cho phản ứng/sục khí',fmt(reaction)+' h']
+    ])+
+    (warns.length?warns.map(x=>box(x,'warn')).join(''):box('Sơ bộ: thể tích được chọn theo điều kiện khống chế lớn nhất giữa trao đổi nước, BOD/F-M và nitrification.'));
+}
+function filterCalc(){
+  let q=v('f_q'),rate=v('f_rate'),Dmm=v('f_d'),D=Dmm/1000;
+  if(q<=0||rate<=0||Dmm<=0){$('fout').innerHTML=box('Q lọc, tốc độ lọc và đường kính cột phải > 0.','warn');return;}
+  let Aneed=q/rate,Acol=Math.PI*D*D/4,actual=Acol>0?q/Acol:0;
+  let gh=v('f_gravel_h'),sh=v('f_sand_h'),ch=v('f_coal_h'),gr=v('f_gravel_rho'),sr=v('f_sand_rho'),cr=v('f_coal_rho');
+  let Vg=Acol*gh,Vs=Acol*sh,Vc=Acol*ch,Mg=Vg*gr,Ms=Vs*sr,Mc=Vc*cr,Htot=gh+sh+ch;
+  $('fout').innerHTML=table([['Diện tích lọc cần theo tải',fmt(Aneed)+' m²'],['Diện tích cột hiện tại',fmt(Acol)+' m²'],['Đường kính cột',fmt(v('f_d'),0)+' mm'],['Tốc độ lọc thực tế',fmt(actual)+' m/h'],
+  ['Chiều cao sỏi',fmt(gh)+' m'],['Thể tích sỏi',fmt(Vg)+' m³'],['Khối lượng sỏi',fmt(Mg)+' kg'],
+  ['Chiều cao cát',fmt(sh)+' m'],['Thể tích cát',fmt(Vs)+' m³'],['Khối lượng cát',fmt(Ms)+' kg'],
+  ['Chiều cao than anthracite',fmt(ch)+' m'],['Thể tích than',fmt(Vc)+' m³'],['Khối lượng than',fmt(Mc)+' kg'],
+  ['Tổng chiều cao vật liệu',fmt(Htot)+' m'],['Tổng khối lượng vật liệu',fmt(Mg+Ms+Mc)+' kg']])+
+  (actual>rate*1.1?box('Tốc độ lọc thực tế cao hơn mục tiêu.','warn'):box('Tốc độ lọc trong giới hạn sơ bộ.'));
+}
+function disCalc(){
+  let q=v('d_q'),dose=v('d_dose'),conc=v('d_conc'),t=v('d_t');
+  if(q<=0||dose<0||conc<=0||t<=0){$('dout').innerHTML=box('Q, nồng độ dung dịch và thời gian tiếp xúc phải hợp lệ; liều phải ≥ 0.','warn');return;}
+  let kg=q*dose/1000,sol=kg/(conc/100),V=q/24*t/60;
+  $('dout').innerHTML=table([
+    ['Cl₂ hữu hiệu yêu cầu',fmt(kg)+' kg/d'],
+    ['Dung dịch cần dùng (xấp xỉ)',fmt(sol)+' kg/d'],
+    ['Bể tiếp xúc theo HRT',fmt(V)+' m³'],
+    ['Thời gian tiếp xúc',fmt(t)+' min']
+  ])+box('Liều chlorine và residual phải xác định theo chlorine demand, CT, pH, nhiệt độ và quy chuẩn áp dụng; đây không phải liều pháp lý cố định.','warn');
+}
+function sludgeCalc(){let ds=v('sl_ds')*v('sl_sf'),c=v('sl_c')/100,V=ds/c/1000;$('slout').innerHTML=table([['Chất rắn thiết kế',fmt(ds)+' kg DS/d'],['Lưu lượng bùn @ nồng độ đặt',fmt(V)+' m³/d'],['Nồng độ bùn',fmt(v('sl_c'))+' % DS']])}
+function pumpCalc(){
+  let q=v('p_q'),H=v('p_h'),e=v('p_e')/100,vt=v('p_v');
+  if(q<=0||H<0||e<=0||e>1||vt<=0){$('pout').innerHTML=box('Kiểm tra Q, H, hiệu suất và vận tốc mục tiêu.','warn');return;}
+  let P=9.81*(q/3600)*H/e,area=(q/3600)/v('p_v'),D=Math.sqrt(4*area/Math.PI)*1000;$('pout').innerHTML=table([['Công suất motor lý thuyết',fmt(P)+' kW'],['Tương đương',fmt(P/.746)+' HP'],['Tiết diện ống theo vận tốc',fmt(area*1e6,0)+' mm²'],['Đường kính trong theo vận tốc',fmt(D,0)+' mm']])}
+function airCalc(){
+  let q=v('o_q'),bodC=v('o_bod'),nhC=v('o_nh4'),ote=v('o_ote')/100,sf=v('o_sf'),H=v('o_h'),eff=v('o_e')/100;
+  if(q<=0||bodC<0||nhC<0||ote<=0||ote>1||sf<=0||H<0||eff<=0||eff>1){$('oout').innerHTML=box('Kiểm tra Q, BOD, NH₄-N, OTE, hệ số an toàn, áp suất và hiệu suất blower.','warn');return;}
+  let bod=q*bodC/1000,nh=q*v('o_nh4')/1000,o2=bod*1.1+nh*4.57,o2d=o2*v('o_sf'),air=o2d/(0.275*v('o_ote')/100),m3min=air/1440,P=9.81*(m3min/60)*v('o_h')/(v('o_e')/100);$('oout').innerHTML=table([['Tải BOD',fmt(bod)+' kg/d'],['O₂ cho BOD sơ bộ',fmt(bod*1.1)+' kg/d'],['O₂ nitrification',fmt(nh*4.57)+' kg/d'],['O₂ thiết kế',fmt(o2d)+' kg/d'],['Không khí',fmt(air)+' m³/d = '+fmt(m3min)+' m³/min'],['Công suất blower lý thuyết',fmt(P)+' kW']])}
+function chemCalc(){let q=v('ch_q'),kg=q*v('ch_d')/1000,sol=kg/(v('ch_c')/100),L=sol/v('ch_rho');$('chout').innerHTML=table([['Hóa chất nguyên chất',fmt(kg)+' kg/d'],['Dung dịch',fmt(sol)+' kg/d'],['Thể tích dung dịch',fmt(L)+' L/d'],['Lưu lượng định lượng',fmt(L/24)+' L/h']])}
+function hydCalc(){
+  let qh=v('h_q'),Dmm=v('h_d'),L=v('h_l'),f=v('h_f'),K=v('h_k');
+  if(qh<=0||Dmm<=0||L<0||f<0||K<0){$('hout').innerHTML=box('Kiểm tra Q, đường kính, chiều dài, hệ số ma sát và K.','warn');return;}
+  let Q=qh/3600,D=Dmm/1000,area=Math.PI*D*D/4,vel=Q/area,hf=f*(L/D)*vel*vel/(2*9.81),hk=K*vel*vel/(2*9.81);$('hout').innerHTML=table([['Vận tốc',fmt(vel)+' m/s'],['Tổn thất dọc đường',fmt(hf)+' mH₂O'],['Tổn thất cục bộ',fmt(hk)+' mH₂O'],['Tổng tổn thất',fmt(hf+hk)+' mH₂O']])}
+function elecCalc(){
+  let P=v('e_kw'),V=v('e_v'),pf=v('e_pf'),eff=v('e_eff');
+  if(P<0||V<=0||pf<=0||pf>1||eff<=0||eff>1){$('eout').innerHTML=box('Kiểm tra P, điện áp, cosφ và hiệu suất motor.','warn');return;}
+  let I=P*1000/(Math.sqrt(3)*V*pf*eff);$('eout').innerHTML=table([['Dòng điện 3 pha',fmt(I)+' A'],['Công suất',fmt(P)+' kW'],['cosφ',fmt(pf,3)],['Hiệu suất motor',fmt(eff*100)+' %']])}
+function unitCalc(){let x=v('un_v'),a=$('un_f').value,b=$('un_t').value;const groups={flow:{'m3/h':1,'L/s':3.6,'m3/day':1/24},press:{bar:1,'mH2O':1/10.197162},power:{kW:1,HP:.746},len:{mm:1,inch:25.4}};let out=null;for(let g of Object.values(groups))if(g[a]&&g[b])out=x/g[a]*g[b];$('unout').innerHTML=out===null?box('Hai đơn vị không cùng nhóm.','warn'):'<div class="card"><div class="big">'+fmt(out,5)+'</div><div class="muted">'+b+'</div></div>'}
+
+[loadCalc,equalCalc,coagCalc,settleCalc,floatCalc,uasbCalc,aeroCalc,anoxicCalc,sbrCalc,filterCalc,disCalc,sludgeCalc,pumpCalc,airCalc,chemCalc,hydCalc,elecCalc,unitCalc,renderProjectList,renderStandards].forEach(function(fn){try{fn()}catch(e){console.warn('WWTC startup:',e)}});
+
+
+const TECH_UNITS={
+  equal:'Bể điều hòa',
+  coag:'Keo tụ – tạo bông',
+  settle:'Bể lắng',
+  float:'Tuyển nổi DAF',
+  uasb:'UASB',
+  bio:'Anoxic / Aerotank',
+  sbr:'SBR',
+  filter:'Lọc áp lực',
+  disinfect:'Khử trùng',
+  sludge:'Bể chứa bùn'
+};
+const TECH_PRESETS={
+  custom:[],
+  physchem:['equal','coag','settle','disinfect'],
+  daf:['equal','coag','float','disinfect'],
+  uasb_ao:['equal','uasb','bio','settle','disinfect'],
+  ao:['equal','bio','settle','disinfect'],
+  sbr:['equal','sbr','filter','disinfect'],
+  full:['equal','coag','settle','uasb','bio','sbr','float','filter','disinfect','sludge']
+};
+function getSelectedUnits(){
+  try{return JSON.parse(localStorage.getItem('wwtcSelectedUnits')||'null')||TECH_PRESETS.ao}
+  catch(e){return TECH_PRESETS.ao.slice()}
+}
+
+function renderUnitChecklist(selected){
+  let box=$('unitChecklist'); if(!box) return;
+  box.innerHTML=Object.entries(TECH_UNITS).map(([id,label])=>
+    '<label class="unitCheck"><input type="checkbox" data-unit="'+id+'" '+(selected.includes(id)?'checked':'')+'> '+label+'</label>'
+  ).join('');
+}
+function applyTechPreset(key){
+  let selected=(TECH_PRESETS[key]||[]).slice();
+  renderUnitChecklist(selected);
+  localStorage.setItem('wwtcSelectedUnits',JSON.stringify(selected));
+  localStorage.setItem('wwtcTechPreset',key);
+  updateUnitVisibility();
+  let msg=$('techMsg');
+  if(msg) msg.textContent=key==='custom'
+    ?'Đã chuyển sang Tự chọn công trình. Tích chọn các công trình cần dùng.'
+    :'✓ Đã chọn công nghệ và cập nhật công trình đơn vị.';
+}
+
+document.addEventListener('change',function(e){
+  if(e.target.matches('#unitChecklist input[data-unit]')){
+    localStorage.setItem('wwtcTechPreset','custom');
+    let selected=[...document.querySelectorAll('#unitChecklist input[data-unit]:checked')].map(x=>x.dataset.unit);
+    localStorage.setItem('wwtcSelectedUnits',JSON.stringify(selected));
+    updateUnitVisibility();
+  }
+});
+function saveTechSelection(){
+  let checks=[...document.querySelectorAll('#unitChecklist input[data-unit]:checked')];
+  let selected=checks.map(x=>x.dataset.unit);
+  localStorage.setItem('wwtcSelectedUnits',JSON.stringify(selected));
+  localStorage.setItem('wwtcTechPreset',$('techPreset')?.value||'custom');
+  updateUnitVisibility();
+  let msg=$('techMsg'); if(msg) msg.textContent='✓ Đã áp dụng '+selected.length+' công trình đơn vị.';
+}
+function updateUnitVisibility(){
+  let selected=getSelectedUnits();
+  Object.keys(TECH_UNITS).forEach(id=>{
+    let show=selected.includes(id);
+    let page=$(id), nav=document.querySelector('nav button[data-p="'+id+'"]'), mobile=document.querySelector('#mobileNav option[value="'+id+'"]');
+    if(page) page.classList.toggle('techHidden',!show);
+    if(nav) nav.classList.toggle('hiddenUnitNav',!show);
+    if(mobile) mobile.hidden=!show;
+  });
+  // If current page was hidden, return to dashboard.
+  let active=document.querySelector('.page.active');
+  if(active && active.classList.contains('techHidden')) tab('home');
+}
+function loadTechSelection(){
+  let selected=getSelectedUnits();
+  let preset=localStorage.getItem('wwtcTechPreset')||'custom';
+  if($('techPreset')) $('techPreset').value=preset;
+  renderUnitChecklist(selected);
+  updateUnitVisibility();
+}
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function resultText(id){let e=$(id);return e?e.innerText.trim():''}
+function reportTable(title,id){
+  let e=$(id); if(!e) return '';
+  let rows=[];
+  e.querySelectorAll('table tr').forEach(function(tr){
+    let c=[...tr.querySelectorAll('th,td')].map(x=>x.innerText.trim());
+    if(c.length>=2) rows.push(c);
+  });
+  if(!rows.length){
+    let t=e.innerText.trim();
+    if(!t)return '';
+    rows=t.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(x=>[x,'']);
+  }
+  let body=rows.map(function(r){return '<tr><th>'+esc(r[0])+'</th><td>'+esc(r.slice(1).join(' | '))+'</td></tr>'}).join('');
+  return '<div class="reportBlock"><div class="reportBlockTitle">'+esc(title)+'</div><div class="reportTableWrap"><table class="reportTable"><thead><tr><th>Thông số</th><th>Kết quả</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
+}
+function generateReport(){
+  let name=($('prname')&&$('prname').value)||'Dự án mới',q=v('q'),now=new Date().toLocaleDateString('vi-VN');
+  let inputs=[['Q thiết kế',fmt(q)+' m³/ngày'],['BOD₅',fmt(v('bod'))+' mg/L'],['COD',fmt(v('cod'))+' mg/L'],['TSS',fmt(v('tss'))+' mg/L'],['NH₄-N',fmt(v('nh4'))+' mg/L'],['TN',fmt(v('tn'))+' mg/L'],['TP',fmt(v('tp'))+' mg/L']];
+  let ib='<div class="reportBlock"><div class="reportBlockTitle">1. Thông số nước thải đầu vào</div><div class="reportTableWrap"><table class="reportTable"><thead><tr><th>Thông số</th><th>Giá trị</th></tr></thead><tbody>'+inputs.map(x=>'<tr><th>'+esc(x[0])+'</th><td>'+esc(x[1])+'</td></tr>').join('')+'</tbody></table></div></div>';
+  let sec=[['Tải lượng ô nhiễm','loadout','always'],['Bể điều hòa','eqout','equal'],['Keo tụ – tạo bông','cgout','coag'],['Bể lắng','stout','settle'],['Tuyển nổi DAF','flout','float'],['UASB','uout','uasb'],['Aerotank','bout','bio'],['Anoxic','nout','bio'],['SBR','sout','sbr'],['Lọc áp lực','fout','filter'],['Khử trùng','dout','disinfect'],['Bùn','slout','sludge'],['Bơm','pout','always'],['Oxy / Blower','oout','always'],['Hóa chất','chout','always'],['Thủy lực','hout','always'],['Điện','eout','always']];
+  let blocks='',n=2,selected=getSelectedUnits();
+  sec.filter(x=>x[2]==='always'||selected.includes(x[2])).forEach(x=>{let b=reportTable(n+'. '+x[0],x[1]);if(b){blocks+=b;n++}});
+  $('reportOut').innerHTML='<div class="reportDocHead"><div class="reportCompany">WWTC • v3.0</div><div class="reportDocTitle">BÁO CÁO THIẾT KẾ HỆ THỐNG XỬ LÝ NƯỚC THẢI</div><div class="reportDocMeta">Báo cáo tính toán sơ bộ • Ngày lập: '+esc(now)+'</div></div><div class="reportBlock"><div class="reportBlockTitle">Thông tin dự án</div><div class="reportTableWrap"><table class="reportTable"><tbody><tr><th>Tên dự án</th><td>'+esc(name)+'</td></tr><tr><th>Q thiết kế</th><td>'+esc(fmt(q))+' m³/ngày</td></tr></tbody></table></div></div>'+ib+blocks+'<div class="reportFoot"><b>Ghi chú:</b> Kết quả phục vụ thiết kế sơ bộ; cần kiểm tra lại theo tiêu chuẩn/quy chuẩn, dữ liệu thực tế, yêu cầu đầu ra và catalogue thiết bị trước khi phát hành hồ sơ chính thức.</div>';
+}
+function showReport(){tab('report');let m=$('mobileNav');if(m)m.value='report';generateReport()}
+function exportReportHTML(){generateReport();let name=(($('prname')&&$('prname').value)||'WWTC_Bao_cao').replace(/[^\w\-À-ỹ ]/g,'_');let doc='<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WWTC - '+esc(name)+'</title><style>body{font:13px Arial;color:#18222d;max-width:1000px;margin:auto;padding:25px}.reportDocHead{border-bottom:2px solid #1d5f8f;padding-bottom:13px}.reportCompany{font-size:11px;font-weight:700;color:#607080}.reportDocTitle{font-size:23px;font-weight:800;margin:5px 0}.reportDocMeta{font-size:11px;color:#647382}.reportBlock{margin:18px 0}.reportBlockTitle{font-size:15px;font-weight:800;padding:8px 10px;background:#f2f5f7;border-left:4px solid #1d5f8f}.reportTable{width:100%;border-collapse:collapse;font-size:12px}.reportTable th,.reportTable td{border:1px solid #dfe5ea;padding:8px;text-align:left;vertical-align:top;line-height:1.45}.reportTable thead th{background:#f8fafb;font-size:10px}.reportTable tbody th{width:38%;background:#fcfcfd}.reportFoot{font-size:10.5px;color:#687783;border-top:1px solid #dfe5ea;padding-top:10px;margin-top:22px}</style></head><body>'+$('reportOut').innerHTML+'</body></html>';let a=document.createElement('a');a.href='data:text/html;charset=utf-8,'+encodeURIComponent(doc);a.download=name+'.html';document.body.appendChild(a);a.click();a.remove()}
+function printReport(){generateReport();tab('report');setTimeout(()=>window.print(),100)}
+
+document.addEventListener('DOMContentLoaded',function(){
+  loadTechSelection();
+    if(typeof geoUpdateUI==='function')geoUpdateUI();
+    if(typeof runComplianceCheck==='function')runComplianceCheck();
+  });
+document.addEventListener('click',function(e){let b=e.target.closest('.projectOpen,.projectDelete');if(!b)return;let key=decodeURIComponent(b.dataset.project||'');if(b.classList.contains('projectOpen'))loadProject(key);else deleteProject(key);});
+
+document.addEventListener('DOMContentLoaded',function(){
+  window.__wwtcNavReady=true;
+  document.querySelectorAll('nav button[data-p]').forEach(function(b){
+    b.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();tab(b.dataset.p);} });
+  });
+  let m=$('mobileNav');if(m)m.addEventListener('change',function(){if(this.value)tab(this.value);});
+  ['q','bod','cod','tss','nh4','tn','tp'].forEach(function(id){let e=$(id);if(e)e.addEventListener('input',function(){loadCalc()})});
+});
+
+
+/* ============================
+   WWTC Compliance + Geometry
+   ============================ */
+const CMP_RULES=[
+  {name:'Điều hòa — HRT',module:'equal',value:()=>v('eq_h'),lo:6,hi:12,unit:'h',kind:'reference',source:'Thư viện thiết kế WWTC / tham khảo',reason:'HRT 6–12 h là khoảng tham khảo để ổn định dao động Q/tải.'},
+  {name:'Điều hòa — chiều sâu',module:'equal',value:()=>v('eq_depth'),lo:3,hi:5,unit:'m',kind:'reference',source:'Thư viện thiết kế WWTC / tham khảo',reason:'Khoảng sơ bộ 3–5 m; phụ thuộc kết cấu và thiết bị.'},
+  {name:'Keo tụ — thời gian nhanh',module:'coag',value:()=>v('cg_t'),lo:1,hi:5,unit:'min',kind:'reference',source:'Jar-test / tham khảo công nghệ',reason:'Cần hiệu chỉnh theo hóa chất và nước thực tế.'},
+  {name:'Tạo bông — thời gian',module:'coag',value:()=>v('fl_t'),lo:15,hi:30,unit:'min',kind:'reference',source:'Jar-test / tham khảo công nghệ',reason:'Nên kiểm chứng bằng jar-test.'},
+  {name:'Lắng — tải trọng bề mặt',module:'settle',value:()=>v('st_ov'),lo:15,hi:30,unit:'m³/m².d',kind:'reference',source:'TCVN 7957:2023 + tham khảo',reason:'Khoảng tham khảo rộng; phải kiểm tra SVI, MLSS, SRT và Qđỉnh.'},
+  {name:'DAF — tải trọng bề mặt',module:'float',value:()=>v('fl_ov'),lo:5,hi:15,unit:'m³/m².h',kind:'reference',source:'Tham khảo DAF',reason:'Phụ thuộc loại nước và thiết kế DAF.'},
+  {name:'DAF — recycle',module:'float',value:()=>v('fl_recycle'),lo:10,hi:30,unit:'%',kind:'reference',source:'Tham khảo DAF',reason:'Cần tính cùng A/S ratio và hệ thống bão hòa khí.'},
+  {name:'UASB — OLR',module:'uasb',value:()=>v('u_olr'),lo:1,hi:5,unit:'kg COD/m³.d',kind:'reference',source:'Tham khảo UASB',reason:'Phụ thuộc nhiệt độ, COD dễ phân hủy, bùn hạt và khởi động.'},
+  {name:'UASB — chiều cao hữu ích',module:'uasb',value:()=>v('u_h'),lo:4,hi:7,unit:'m',kind:'reference',source:'Tham khảo UASB',reason:'Cần kiểm tra separator và phân phối dòng.'},
+  {name:'Anoxic — HRT',module:'bio',value:()=>v('nhrt'),lo:1,hi:4,unit:'h',kind:'reference',source:'TCVN 7957:2023 + tham khảo',reason:'Phụ thuộc NO₃ load, carbon và recycle.'},
+  {name:'Aerotank — MLSS',module:'bio',value:()=>v('bmlss'),lo:2500,hi:5000,unit:'mg/L',kind:'reference',source:'TCVN 7957:2023 + tham khảo',reason:'Phải kiểm tra đồng thời SVI/SRT và tải lắng.'},
+  {name:'Aerotank — F/M',module:'bio',value:()=>v('bfm'),lo:.05,hi:.30,unit:'kg BOD/kg MLSS.d',kind:'reference',source:'Tham khảo bùn hoạt tính',reason:'Khoảng rộng; nitrification thường cần tải thấp/SRT cao hơn.'},
+  {name:'Aerotank — DO',module:'bio',value:()=>v('bndo'),lo:1.5,hi:3,unit:'mg/L',kind:'reference',source:'Tham khảo vận hành',reason:'Cần kiểm tra theo NH₄, alpha factor và truyền oxy.'},
+  {name:'SBR — số mẻ',module:'sbr',value:()=>v('s_batch'),lo:2,hi:4,unit:'mẻ/d',kind:'reference',source:'TCVN 7957:2023 + tham khảo SBR',reason:'Phụ thuộc Q, chu kỳ, thể tích bể và thiết bị.'},
+  {name:'SBR — tỷ lệ trao đổi',module:'sbr',value:()=>v('s_draw'),lo:20,hi:40,unit:'%',kind:'reference',source:'Tham khảo SBR',reason:'Ảnh hưởng SRT, thể tích làm việc và khả năng chịu tải.'},
+  {name:'Lọc áp lực — tốc độ lọc',module:'filter',value:()=>v('f_rate'),lo:5,hi:15,unit:'m/h',kind:'reference',source:'Tham khảo lọc áp lực',reason:'Phụ thuộc vật liệu lọc và chất lượng nước.'},
+  {name:'Khử trùng — thời gian tiếp xúc',module:'disinfect',value:()=>v('d_t'),lo:15,hi:30,unit:'min',kind:'reference',source:'Thiết kế chlorine contact',reason:'Phải xét CT, pH, nhiệt độ và chlorine demand.'},
+  {name:'Bể chứa bùn — nồng độ',module:'sludge',value:()=>v('sl_c'),lo:.5,hi:3,unit:'% DS',kind:'reference',source:'Tham khảo thiết kế bùn',reason:'Phụ thuộc nguồn bùn và thiết bị.'}
+];
+
+function cmpStatus(r){
+  const x=Number(r.value());
+  if(!Number.isFinite(x)) return {status:'warn',label:'THIẾU DỮ LIỆU',reason:'Chưa có giá trị hợp lệ để kiểm tra.'};
+  if(x<r.lo || x>r.hi) return {status:'warn',label:'CẦN XEM XÉT',reason:`Ngoài khoảng tham khảo ${r.lo}–${r.hi} ${r.unit}. Không được tự động hiểu là vi phạm pháp luật.`};
+  return {status:'ok',label:'TRONG KHOẢNG',reason:`Nằm trong khoảng tham khảo ${r.lo}–${r.hi} ${r.unit}.`};
+}
+
+function runComplianceCheck(){
+  const filter=$('cmpFilter')?.value||'all';
+  const rows=CMP_RULES.map(r=>{
+    const c=cmpStatus(r); return {...r,...c,valueNum:Number(r.value())};
+  }).filter(x=>filter==='all'||x.status===filter);
+
+  let ok=0,warn=0,bad=0;
+  CMP_RULES.forEach(r=>{const s=cmpStatus(r).status;if(s==='ok')ok++;else if(s==='warn')warn++;else bad++;});
+  if($('cmpOk'))$('cmpOk').textContent=ok;
+  if($('cmpWarn'))$('cmpWarn').textContent=warn;
+  if($('cmpBad'))$('cmpBad').textContent=bad;
+
+  const htmlRows=rows.map(r=>{
+    const cls=r.status==='ok'?'cmpRowOk':r.status==='warn'?'cmpRowWarn':'cmpRowBad';
+    const badge=r.status==='ok'?'<span class="cmpBadge cmpOk">XANH</span>':r.status==='warn'?'<span class="cmpBadge cmpWarn">VÀNG</span>':'<span class="cmpBadge cmpBad">ĐỎ</span>';
+    return `<tr class="${cls}">
+      <td><b>${r.name}</b><div class="cmpSource">${r.source}</div></td>
+      <td>${fmt(r.valueNum)} ${r.unit}</td>
+      <td>${fmt(r.lo)} – ${fmt(r.hi)} ${r.unit}</td>
+      <td>${badge}<div class="cmpReason">${r.reason}</div></td>
+    </tr>`;
+  }).join('');
+
+  $('complianceOut').innerHTML=
+    '<table><tr><th>Hạng mục</th><th>Giá trị hiện tại</th><th>Khoảng kiểm tra</th><th>Kết quả</th></tr>'+
+    (htmlRows||'<tr><td colspan="4">Không có mục phù hợp bộ lọc.</td></tr>')+'</table>'+
+    '<div class="note" style="margin-top:10px">Hiện thư viện cảnh báo chủ yếu là <b>khoảng tham khảo kỹ thuật</b>. Muốn chuyển một quy tắc sang mức <b>ĐỎ – không đạt pháp lý</b>, cần gắn chính xác điều khoản QCVN/TCVN và đúng loại nước thải/mục tiêu xả.</div>';
+}
+
+/* Geometry solver */
+function geoUpdateUI(){
+  const shape=$('geo_shape')?.value||'rect';
+  const ratioBox=$('geo_ratio_box');
+  if(ratioBox) ratioBox.style.display=shape==='square'||shape==='circle'||shape==='cylinder'?'none':'block';
+  geometryCalc();
+}
+
+function geometryCalc(){
+  const shape=$('geo_shape').value;
+  const V=Math.max(0,Number($('geo_v').value)||0);
+  const H=Math.max(0,Number($('geo_h').value)||0);
+  const fb=Math.max(0,Number($('geo_fb').value)||0);
+  const blocks=Math.max(1,Math.round(Number($('geo_blocks').value)||1));
+  const ratio=Math.max(.1,Number($('geo_ratio').value)||2);
+
+  if(V<=0 || H<=0){
+    $('geoout').innerHTML=box('V và H phải lớn hơn 0.','warn'); return;
+  }
+
+  let result={}, perV=V/blocks;
+  if(shape==='rect'){
+    const area=perV/H, W=Math.sqrt(area/ratio), L=W*ratio;
+    result={L,W,H,totalH:H+fb,area,perV,blocks,shape:'Chữ nhật'};
+  }else if(shape==='square'){
+    const area=perV/H, side=Math.sqrt(area);
+    result={L:side,W:side,H,totalH:H+fb,area,perV,blocks,shape:'Vuông'};
+  }else{
+    const area=perV/H, D=Math.sqrt(4*area/Math.PI);
+    result={D,H,totalH:H+fb,area,perV,blocks,shape:shape==='circle'?'Tròn':'Trụ đứng'};
+  }
+
+  let rows=[];
+  rows.push(['Hình học',result.shape]);
+  rows.push(['V hữu ích tổng',fmt(V)+' m³']);
+  rows.push(['Số ngăn',fmt(blocks,0)]);
+  rows.push(['V hữu ích/ngăn',fmt(perV)+' m³']);
+  rows.push(['H hữu ích',fmt(H)+' m']);
+  rows.push(['Freeboard',fmt(fb)+' m']);
+  rows.push(['H tổng sơ bộ',fmt(result.totalH)+' m']);
+  rows.push(['Diện tích mặt bằng tổng',fmt(result.area*blocks)+' m²']);
+
+  if(shape==='rect'||shape==='square'){
+    rows.push(['Chiều dài L',fmt(result.L)+' m']);
+    rows.push(['Chiều rộng W',fmt(result.W)+' m']);
+    if(shape==='rect') rows.push(['Tỷ lệ L/W',fmt(result.L/result.W,2)]);
+    rows.push(['Kích thước mỗi ngăn',`${fmt(result.L)} × ${fmt(result.W)} × ${fmt(H)} m`]);
+  }else{
+    rows.push(['Đường kính D',fmt(result.D)+' m']);
+    rows.push(['Kích thước bể',`Ø${fmt(result.D)} × ${fmt(H)} m`]);
+  }
+
+  $('geoout').innerHTML=
+    '<div class="geoResultGrid">'+
+    (shape==='rect'||shape==='square'
+      ? `<div class="geoKpi"><small>L</small><strong>${fmt(result.L)} m</strong></div><div class="geoKpi"><small>W</small><strong>${fmt(result.W)} m</strong></div>`
+      : `<div class="geoKpi"><small>D</small><strong>${fmt(result.D)} m</strong></div><div class="geoKpi"><small>Ø</small><strong>${fmt(result.D)} m</strong></div>`)+
+    `<div class="geoKpi"><small>H hữu ích</small><strong>${fmt(H)} m</strong></div><div class="geoKpi"><small>H tổng</small><strong>${fmt(result.totalH)} m</strong></div></div>`+
+    table(rows);
+
+  let checks=[];
+  if(H<2) checks.push(box('Chiều sâu hữu ích < 2 m; nên xem xét lại theo loại công trình và thiết bị.','warn'));
+  if(H>7) checks.push(box('Chiều sâu hữu ích > 7 m; cần kiểm tra lại kết cấu, thi công và mục đích công trình.','warn'));
+  if(shape==='rect' && (result.L/result.W<1.5 || result.L/result.W>4)){
+    checks.push(box('Tỷ lệ L/W đang ngoài vùng hình học thông dụng 1,5–4; đây là kiểm tra hình học sơ bộ, không phải giới hạn pháp lý.','warn'));
+  }
+  if(blocks>1 && perV<1) checks.push(box('Thể tích mỗi ngăn < 1 m³; kiểm tra lại tính hợp lý thực tế.','warn'));
+  $('geoCheck').innerHTML=checks.length?checks.join('')+box('Kích thước trên là suy luận hình học từ V và H; cần kiểm tra cao độ, freeboard, chiều rộng hành lang, thiết bị và yêu cầu kết cấu trước khi chốt bản vẽ.','ok'):box('Hình học đang hợp lý theo các kiểm tra sơ bộ của module.','ok');
+}
+
+document.addEventListener('change',e=>{
+  if(e.target && e.target.id==='geo_shape') geoUpdateUI();
+});
+
+/* Run once when page becomes available. */
+setTimeout(()=>{try{runComplianceCheck()}catch(e){console.warn(e)}},350);
+
+</script></body></html>
+<!-- WWTC V4.0 FULL AUDITED CORE - audit manifest: {"base": "WWTC_V4_0_DEVELOPMENT_BASE.html", "audit": "Full structural/core-function audit", "javascript_syntax": true, "core_functions_present": true, "compliance_module": true, "geometry_module": true, "module_volume_button_removed": true, "sbr_hrt_label": true, "author_header": true} -->
